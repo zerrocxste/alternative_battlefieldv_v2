@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{5055c1fc-5c19-42b5-b192-b67021e00974}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\console">
+      <UniqueIdentifier>{53e4dcc1-150c-4f15-ac22-90ac164609a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs">
+      <UniqueIdentifier>{2656adcc-b207-4640-a61a-6ecf55899fcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\vars">
+      <UniqueIdentifier>{79ffec27-15b8-46af-8d2a-e7fbd2df55de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\minhook">
+      <UniqueIdentifier>{d22e23f6-abbf-4c5f-9d92-a9a18ba92301}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\memory_utils">
+      <UniqueIdentifier>{83cccc33-fb2b-4086-a6ce-6ecfb6e4f032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\hook_manager">
+      <UniqueIdentifier>{71b1e85b-7656-4722-b636-967732ef7964}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\features">
+      <UniqueIdentifier>{6b1537c6-fddf-44ed-9dbd-a6fd9aa9c288}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\key_helper">
+      <UniqueIdentifier>{df507413-d979-4c39-8a9c-6f67dd033668}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\alternative.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vars\vars.cpp">
+      <Filter>src\vars</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory_utils\memory_utils.cpp">
+      <Filter>src\memory_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hook_manager\hook_manager.cpp">
+      <Filter>src\hook_manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\features.cpp">
+      <Filter>src\features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\key_helper\key_helper.cpp">
+      <Filter>src\key_helper</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\alternative.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\console\console.h">
+      <Filter>src\console</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vars\vars.h">
+      <Filter>src\vars</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\minhook\minhook.h">
+      <Filter>libs\minhook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory_utils\memory_utils.h">
+      <Filter>src\memory_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\hook_manager\hook_manager.h">
+      <Filter>src\hook_manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\features.h">
+      <Filter>src\features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\key_helper\key_helper.h">
+      <Filter>src\key_helper</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libs\minhook\minhook.lib">
+      <Filter>libs\minhook</Filter>
+    </Library>
+  </ItemGroup>
+</Project>
