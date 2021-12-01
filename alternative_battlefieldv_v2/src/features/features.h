@@ -3,22 +3,24 @@ namespace Features
 	class CFeatures
 	{
 	private:
-		std::mutex m_mtxCollentData;
+		std::mutex m_mtxCollectData;
 		std::vector<DWORD_PTR> m_vClientSoldierEntityList;
 		DWORD_PTR m_pLocalClientSoldierEntity;
+
+		void MainRadarHackWork();
+		void LockupRadarHackMutex();
 	public:
 		CFeatures();
 		~CFeatures();
 
 		void DrawEnemyInGameRadar();
 		void PatchDrawNameTagsAlwaysVisible(bool bIsEnable);
+		void PatchNameTagDrawExtendedInfo(bool bIsEnable);
 
 		void ClientSoldierEntityListGrabber(DWORD_PTR ClientSoldierEntity);
 		void LocalpClientSoldierEntityGrabber(DWORD_PTR pClientSoldierEntity);
 		void NoRecoil(bool bIsEnable);
-		void NoSpread(bool bIsEnable);
-		void IncreaseFireRate(bool bIsEnable, float flRate = 0.02f);
 	};
 
-	extern std::unique_ptr<CFeatures> g_pFeatures;
+	extern std::unique_ptr<CFeatures> pFeatures;
 }

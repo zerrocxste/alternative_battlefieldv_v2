@@ -5,8 +5,8 @@ fsub1420C7C90 pfsub1420C7C90 = nullptr;
 
 void __fastcall sub1420C7C90_hooked(__int64 a1) //a1 cse structure
 {
-	if (Vars::g_pVars->m_EngineVars.m_bRadarActive)
-		Features::g_pFeatures->ClientSoldierEntityListGrabber((DWORD_PTR)(a1 - 0x338));
+	if (Vars::pVars->m_HackVars.m_bRadarActive)
+		Features::pFeatures->ClientSoldierEntityListGrabber((DWORD_PTR)(a1 - 0x338));
 
 	pfsub1420C7C90(a1);
 }
@@ -16,8 +16,8 @@ fsub140970280 pfsub140970280 = nullptr;
 
 __int64 __fastcall sub140970280_hooked(__int64 a1, __int64 a2, __int64 a3)
 {
-	if (Vars::g_pVars->m_EngineVars.m_bRadarActive)
-		Features::g_pFeatures->LocalpClientSoldierEntityGrabber((DWORD_PTR)(a1 + 0x110));
+	if (Vars::pVars->m_HackVars.m_bRadarActive)
+		Features::pFeatures->LocalpClientSoldierEntityGrabber((DWORD_PTR)(a1 + 0x110));
 
 	return pfsub140970280(a1, a2, a3);
 }
@@ -124,5 +124,5 @@ namespace HookManager
 		return MH_Uninitialize() != MH_OK;
 	}
 
-	std::unique_ptr<CHookManager> g_pHookManager = std::make_unique<CHookManager>();
+	std::unique_ptr<CHookManager> pHookManager = std::make_unique<CHookManager>();
 }

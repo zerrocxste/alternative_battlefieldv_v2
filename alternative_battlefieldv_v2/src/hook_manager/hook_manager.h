@@ -13,5 +13,5 @@ namespace HookManager
 		bool DoUninitialize();
 	};
 	
-	extern std::unique_ptr<CHookManager> g_pHookManager;
+	extern std::unique_ptr<CHookManager> pHookManager;
 }

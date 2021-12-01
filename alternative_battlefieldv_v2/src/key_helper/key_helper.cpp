@@ -30,5 +30,5 @@ namespace KeyHelper
 		return ret;
 	}
 
-	std::unique_ptr<CKeyHelper> g_pKeyHelper = std::make_unique<CKeyHelper>();
+	std::unique_ptr<CKeyHelper> pKeyHelper = std::make_unique<CKeyHelper>();
 }

@@ -109,25 +109,32 @@ namespace memory_utils
 
 		MEMORY_BASIC_INFORMATION mbi{};
 		while (start < end &&
-			VirtualQuery((void*)start, &mbi, sizeof(MEMORY_BASIC_INFORMATION)) != NULL)
+			VirtualQuery((void*)start, &mbi, sizeof(MEMORY_BASIC_INFORMATION)) != 0)
 		{
 			auto fix_seg = false;
 			DWORD_PTR start_seg = (DWORD_PTR)mbi.BaseAddress;
 			DWORD_PTR size_seg = mbi.RegionSize;
 
-			if (mbi.Protect == page_prot
-				&& mbi.State == page_state
-				&& mbi.Type == page_type)
-			{
-				if (start > start_seg)
-				{
-					size_seg -= start - start_seg;
-					fix_seg = true;
-				}
+			if (page_prot != 0 && mbi.Protect != page_prot)
+				goto next_seg;
 
-				if (auto compare_result = compare_mem(pattern, mask, start, end, pattern_length, scan_speed))
-					return compare_result;
+			if (page_state != 0 && mbi.State != page_state)
+				goto next_seg;
+
+			if (page_type != 0 && mbi.Type != page_type)
+				goto next_seg;
+
+			if (start > start_seg)
+			{
+				size_seg -= start - start_seg;
+				fix_seg = true;
 			}
+
+			if (auto compare_result = compare_mem(pattern, mask, start, end, pattern_length, scan_speed))
+				return compare_result;
+
+			next_seg:
+
 			fix_seg ? start += size_seg : start = start_seg + size_seg;
 		}
 
@@ -146,25 +153,32 @@ namespace memory_utils
 
 		MEMORY_BASIC_INFORMATION mbi{};
 		while (start < end &&
-			VirtualQuery((void*)start, &mbi, sizeof(MEMORY_BASIC_INFORMATION)) != NULL)
+			VirtualQuery((void*)start, &mbi, sizeof(MEMORY_BASIC_INFORMATION)) != 0)
 		{
 			auto fix_seg = false;
 			DWORD_PTR start_seg = (DWORD_PTR)mbi.BaseAddress;
 			DWORD_PTR size_seg = mbi.RegionSize;
 
-			if (mbi.Protect == page_prot
-				&& mbi.State == page_state
-				&& mbi.Type == page_type)
-			{
-				if (start > start_seg)
-				{
-					size_seg -= start - start_seg;
-					fix_seg = true;
-				}
+			if (page_prot != 0 && mbi.Protect != page_prot)
+				goto next_seg;
 
-				if (auto compare_result = compare_mem(pattern, mask, start, end, pattern_length, scan_speed))
-					ret.push_back(compare_result);
+			if (page_state != 0 && mbi.State != page_state)
+				goto next_seg;
+
+			if (page_type != 0 && mbi.Type != page_type)
+				goto next_seg;
+
+			if (start > start_seg)
+			{
+				size_seg -= start - start_seg;
+				fix_seg = true;
 			}
+
+			if (auto compare_result = compare_mem(pattern, mask, start, end, pattern_length, scan_speed))
+				ret.push_back(compare_result);
+
+			next_seg:
+
 			fix_seg ? start += size_seg : start = start_seg + size_seg;
 		}
 

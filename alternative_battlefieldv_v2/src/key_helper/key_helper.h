@@ -12,5 +12,5 @@ namespace KeyHelper
 		bool IsKeyDowned(int iVkCode);
 	};
 
-	extern std::unique_ptr<CKeyHelper> g_pKeyHelper;
+	extern std::unique_ptr<CKeyHelper> pKeyHelper;
 }

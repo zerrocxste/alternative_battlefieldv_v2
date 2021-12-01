@@ -19,5 +19,5 @@ namespace Vars
 		
 	}
 
-	std::unique_ptr<CVars> g_pVars = std::make_unique<CVars>();
+	std::unique_ptr<CVars> pVars = std::make_unique<CVars>();
 }

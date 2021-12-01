@@ -2,57 +2,52 @@
 
 void MainRoutine()
 {
-	if (KeyHelper::g_pKeyHelper->IsKeyReleased(VK_F1))
-		Vars::g_pVars->m_EngineVars.m_bRadarActive = !Vars::g_pVars->m_EngineVars.m_bRadarActive;
+	if (KeyHelper::pKeyHelper->IsKeyReleased(VK_F1))
+		Vars::pVars->m_HackVars.m_bRadarActive = !Vars::pVars->m_HackVars.m_bRadarActive;
 
-	if (Vars::g_pVars->m_EngineVars.m_bRadarActive)
-		Features::g_pFeatures->DrawEnemyInGameRadar();
+	if (Vars::pVars->m_HackVars.m_bRadarActive)
+		Features::pFeatures->DrawEnemyInGameRadar();
 
-	if (KeyHelper::g_pKeyHelper->IsKeyReleased(VK_F2))
+	if (KeyHelper::pKeyHelper->IsKeyReleased(VK_F2))
 	{
-		Features::g_pFeatures->PatchDrawNameTagsAlwaysVisible(
-			Vars::g_pVars->m_MiscVars.m_bNameTagsAlwaysVisible = !Vars::g_pVars->m_MiscVars.m_bNameTagsAlwaysVisible
+		Features::pFeatures->PatchDrawNameTagsAlwaysVisible(
+			Vars::pVars->m_HackVars.m_bNameTagsAlwaysVisible = !Vars::pVars->m_HackVars.m_bNameTagsAlwaysVisible
 		);
 	}
 
-	if (KeyHelper::g_pKeyHelper->IsKeyReleased(VK_F3))
+	if (KeyHelper::pKeyHelper->IsKeyReleased(VK_F3))
 	{
-		Features::g_pFeatures->NoRecoil(
-			Vars::g_pVars->m_MiscVars.m_bNoRecoil = !Vars::g_pVars->m_MiscVars.m_bNoRecoil
+		Features::pFeatures->PatchNameTagDrawExtendedInfo(
+			Vars::pVars->m_HackVars.m_bNameTagDrawExtendedInfo = !Vars::pVars->m_HackVars.m_bNameTagDrawExtendedInfo
 		);
 	}
 
-	if (KeyHelper::g_pKeyHelper->IsKeyReleased(VK_F4))
+	if (KeyHelper::pKeyHelper->IsKeyReleased(VK_F4))
 	{
-		Features::g_pFeatures->NoSpread(
-			Vars::g_pVars->m_MiscVars.m_bNoSpread = !Vars::g_pVars->m_MiscVars.m_bNoSpread
-		);
-	}
-
-	if (KeyHelper::g_pKeyHelper->IsKeyReleased(VK_F5))
-	{
-		Features::g_pFeatures->IncreaseFireRate(
-			Vars::g_pVars->m_MiscVars.m_bIncreaseFirerate = !Vars::g_pVars->m_MiscVars.m_bIncreaseFirerate
+		Features::pFeatures->NoRecoil(
+			Vars::pVars->m_HackVars.m_bNoRecoil = !Vars::pVars->m_HackVars.m_bNoRecoil
 		);
 	}
 }
 
 void MainHackThread(void* arg)
 {
-	//Console::Attach("alternative | battlefield v");
+#ifdef _USERDEBUG
+	Console::Attach("alternative | battlefield v");
+#endif
 
 	Console::PrintLogTime(__FUNCTION__, "Attach success\n");
 
-	if (!HookManager::g_pHookManager->DoInitialize())
+	if (!HookManager::pHookManager->DoInitialize())
 		goto failed_jmp;
 
 	while (!GetAsyncKeyState(VK_DELETE))
 	{
 		MainRoutine();
-		std::this_thread::sleep_for(std::chrono::microseconds(1));
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 	}
 
-	if (!HookManager::g_pHookManager->DoUninitialize())
+	if (!HookManager::pHookManager->DoUninitialize())
 	{
 		Console::PrintLogTime(__FUNCTION__, "Unhook failed!\n");
 		return;

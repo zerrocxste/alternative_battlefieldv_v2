@@ -3,26 +3,26 @@ namespace Vars
 	class CVars
 	{
 	private:
-		struct Engine
+		struct Hack
 		{
 			bool m_bRadarActive;
-		};
-		struct Misc
-		{
+			bool m_bNameTagDrawExtendedInfo;
 			bool m_bNameTagsAlwaysVisible;
 			bool m_bNoRecoil;
-			bool m_bNoSpread;
-			bool m_bIncreaseFirerate;
 		};
-		
+		struct Global
+		{
+			HWND hWndGame;
+		};
+
 		void LoadDefaultVars();
 	public:
 		CVars();
 		~CVars();
 
-		Engine m_EngineVars;
-		Misc m_MiscVars;
+		Hack m_HackVars;
+		Global m_GlobalVars;
 	};
 	
-	extern std::unique_ptr<CVars> g_pVars;
+	extern std::unique_ptr<CVars> pVars;
 }
