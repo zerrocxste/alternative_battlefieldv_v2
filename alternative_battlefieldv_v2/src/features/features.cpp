@@ -2,14 +2,18 @@
 
 namespace Features
 {
-	CFeatures::CFeatures()
+	CFeatures::CFeatures() : m_pLocalClientSoldierEntity(0)
 	{
-		memset(this, 0, sizeof(*this));
+
 	}
 
 	CFeatures::~CFeatures()
 	{
 		this->m_vClientSoldierEntityList.clear();
+
+		PatchDrawNameTagsAlwaysVisible(false);
+		NoRecoil(false);
+		IncreaseFireRate(false);
 	}
 
 	void CFeatures::MainRadarHackWork()
@@ -198,6 +202,26 @@ namespace Features
 			BYTE bOriginalRecoilYawInstruction[5] = { 0xf3, 0x0f, 0x11, 0x77, 0x78 };
 			memory_utils::patch_instruction(WeaponRecoilPitchWriterInstruction, (const char*)&bOriginalRecoilPitchInstruction, 5);
 			memory_utils::patch_instruction(WeaponRecoilYawWriterInstruction, (const char*)&bOriginalRecoilYawInstruction, 5);
+		}
+	}
+
+	void CFeatures::IncreaseFireRate(bool bIsEnable, float flRate)
+	{
+		static auto WeaponFirerateWriterInstruction = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\xF3\x0F\x00\x00\x00\x00\x00\x00\xE9\x00\x00\x00\x00\x85\xD2", "xx??????x????xx");
+
+		if (!WeaponFirerateWriterInstruction)
+			return;
+
+		if (bIsEnable)
+		{
+			BYTE bFastfireratePatch[14] = { 0xc7, 0x87, 0xd4, 0x01, 0x00, 0x00, 0x0a, 0xd7, 0xa3, 0x3c, 0x90, 0x90, 0x90, 0x90 };
+			memcpy(bFastfireratePatch + 0x6, &flRate, 4);
+			memory_utils::patch_instruction(WeaponFirerateWriterInstruction - 0x6, (const char*)&bFastfireratePatch, 14);
+		}
+		else
+		{
+			BYTE bOriginalFirerateInstruction[14] = { 0x89, 0x87, 0x60, 0x01, 0x00, 0x00, 0xf3, 0x0f, 0x11, 0x87, 0xd4, 0x01, 0x00, 0x00 };
+			memory_utils::patch_instruction(WeaponFirerateWriterInstruction - 0x6, (const char*)&bOriginalFirerateInstruction, 14);
 		}
 	}
 

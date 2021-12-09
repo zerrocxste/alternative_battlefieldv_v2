@@ -14,19 +14,17 @@ namespace KeyHelper
 
 	bool CKeyHelper::IsKeyReleased(int iVkCode)
 	{
-		static bool bKeyMap[255] = { 0 };
 		bool bIsPressed = GetAsyncKeyState(iVkCode);
-		bool ret = !bIsPressed && bKeyMap[iVkCode];
-		bKeyMap[iVkCode] = bIsPressed;
+		bool ret = !bIsPressed && this->m_bKeyMap[iVkCode];
+		this->m_bKeyMap[iVkCode] = bIsPressed;
 		return ret;
 	}
 
 	bool CKeyHelper::IsKeyDowned(int iVkCode)
 	{
-		static bool bKeyMap[255] = { 0 };
 		bool bIsPressed = GetAsyncKeyState(iVkCode);
-		bool ret = bIsPressed && !bKeyMap[iVkCode];
-		bKeyMap[iVkCode] = bIsPressed;
+		bool ret = bIsPressed && !this->m_bKeyMap[iVkCode];
+		this->m_bKeyMap[iVkCode] = bIsPressed;
 		return ret;
 	}
 

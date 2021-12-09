@@ -2,6 +2,9 @@
 
 void MainRoutine()
 {
+	if (KeyHelper::pKeyHelper->IsKeyReleased(VK_LBUTTON))
+		Vars::pVars->m_BackendVars.m_bUpdatedSoundLButtonReleased = true;
+
 	if (KeyHelper::pKeyHelper->IsKeyReleased(VK_F1))
 		Vars::pVars->m_HackVars.m_bRadarActive = !Vars::pVars->m_HackVars.m_bRadarActive;
 
@@ -28,6 +31,13 @@ void MainRoutine()
 			Vars::pVars->m_HackVars.m_bNoRecoil = !Vars::pVars->m_HackVars.m_bNoRecoil
 		);
 	}
+
+	if (KeyHelper::pKeyHelper->IsKeyReleased(VK_F5))
+	{
+		Features::pFeatures->IncreaseFireRate(
+			Vars::pVars->m_HackVars.m_bIncreaseFireRate = !Vars::pVars->m_HackVars.m_bIncreaseFireRate
+		);
+	}
 }
 
 void MainHackThread(void* arg)
@@ -36,10 +46,13 @@ void MainHackThread(void* arg)
 	Console::Attach("alternative | battlefield v");
 #endif
 
-	Console::PrintLogTime(__FUNCTION__, "Attach success\n");
+	Console::PrintLogTime(__FUNCTION__, "Attach success");
 
 	if (!HookManager::pHookManager->DoInitialize())
+	{
+		Console::PrintLogTime(__FUNCTION__, "Failed installation hooks!\n");
 		goto failed_jmp;
+	}
 
 	while (!GetAsyncKeyState(VK_DELETE))
 	{
@@ -55,6 +68,7 @@ void MainHackThread(void* arg)
 
 	failed_jmp:
 	Console::PrintLogTime(__FUNCTION__, "Exit...\n");
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	FreeLibraryAndExitThread((HMODULE)arg, EXIT_SUCCESS);
 }
 

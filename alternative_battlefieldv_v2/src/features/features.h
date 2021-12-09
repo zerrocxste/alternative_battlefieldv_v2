@@ -20,6 +20,7 @@ namespace Features
 		void ClientSoldierEntityListGrabber(DWORD_PTR ClientSoldierEntity);
 		void LocalpClientSoldierEntityGrabber(DWORD_PTR pClientSoldierEntity);
 		void NoRecoil(bool bIsEnable);
+		void IncreaseFireRate(bool bIsEnable, float flRate = 0.02f);
 	};
 
 	extern std::unique_ptr<CFeatures> pFeatures;

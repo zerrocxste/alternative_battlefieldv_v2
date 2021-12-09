@@ -3,7 +3,7 @@ namespace KeyHelper
 	class CKeyHelper
 	{
 	private:
-		bool bKeyMap[255];
+		bool m_bKeyMap[255];
 	public:
 		CKeyHelper();
 		~CKeyHelper();
