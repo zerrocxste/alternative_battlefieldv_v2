@@ -32,15 +32,36 @@ void __fastcall sub14958F0D0_hooked(__int64 param_1, __int64 param_2, int param_
 	if (Vars::pVars->m_HackVars.m_bIncreaseFireRate && bFireSoundIndexIsLocal)
 	{
 		static int iSkippedSound = 0;
+		static __int64 pLastArg1 = 0;
+
 		iSkippedSound++;
-		if (!Vars::pVars->m_BackendVars.m_bUpdatedSoundLButtonReleased && iSkippedSound < 5)
+
+		if (!Vars::pVars->m_BackendVars.m_bUpdatedSoundLButtonReleased && 
+			param_1 == pLastArg1 &&
+			 iSkippedSound < 5)
 			return;
 		else
 			iSkippedSound = 0;
+
 		Vars::pVars->m_BackendVars.m_bUpdatedSoundLButtonReleased = false;
+
+		pLastArg1 = param_1;
 	}
 
 	pfsub14958F0D0(param_1, param_2, param_3, param_4, param_5);
+}
+
+using FUN_1405c10a0 = __int64(__fastcall*)(__int64, __int64, __int64, __int64);
+FUN_1405c10a0 pFUN_1405c10a0 = nullptr;
+
+__int64 FUN_1405c10a0_hooked(__int64 param_1, __int64 param_2, __int64 param_3, __int64 param_4)
+{
+	auto ret = pFUN_1405c10a0(param_1, param_2, param_3, param_4);
+
+	if (ret != 0)
+		Features::pFeatures->DrawScreen(ret);
+
+	return ret;
 }
 
 namespace HookManager
@@ -132,6 +153,29 @@ namespace HookManager
 		return true;
 	}
 
+	bool CHookManager::Hook_sub1405C10A0(bool bDoHook)
+	{
+		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(),
+			"\x40\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x20\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x00\x00\x00\x00\x48\x85\x00\x75", 
+			"x?xxx?xxxxx????xx???xx???xx???xx?????xx?x");
+
+		if (bDoHook)
+		{
+			if (MH_CreateHook(Address, FUN_1405c10a0_hooked, (LPVOID*)&pFUN_1405c10a0) != MH_OK)
+				return false;
+
+			if (MH_EnableHook(Address) != MH_OK)
+				return false;
+		}
+		else
+		{
+			if (!DisableHook(Address))
+				return false;
+		}
+
+		return true;
+	}
+
 	bool CHookManager::DoInitialize()
 	{
 		if (MH_Initialize() != MH_OK)
@@ -158,6 +202,12 @@ namespace HookManager
 			return false;
 		}
 
+		if (!Hook_sub1405C10A0(true))
+		{
+			Console::PrintLogTime(__FUNCTION__, "sub1405C10A0 hook failed\n");
+			return false;
+		}
+
 		return true;
 	}
 
@@ -178,6 +228,12 @@ namespace HookManager
 		if (!Hook_sub14958F0D0(false))
 		{
 			Console::PrintLogTime(__FUNCTION__, "sub14958F0D0 unhook failed\n");
+			return false;
+		}
+
+		if (!Hook_sub1405C10A0(false))
+		{
+			Console::PrintLogTime(__FUNCTION__, "sub1405C10A0 unhook failed\n");
 			return false;
 		}
 

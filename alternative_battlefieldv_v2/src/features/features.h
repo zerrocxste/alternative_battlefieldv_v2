@@ -4,11 +4,13 @@ namespace Features
 	{
 	private:
 		std::mutex m_mtxCollectData;
-		std::vector<DWORD_PTR> m_vClientSoldierEntityList;
 		DWORD_PTR m_pLocalClientSoldierEntity;
+		std::vector<DWORD_PTR> m_vClientSoldierEntityList;
 
 		void MainRadarHackWork();
 		void LockupRadarHackMutex();
+
+		void DrawEngineText(__int64 RenderBase, int x, int y, const char* pszText, std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a, float flTextSize);
 	public:
 		CFeatures();
 		~CFeatures();
@@ -21,6 +23,8 @@ namespace Features
 		void LocalpClientSoldierEntityGrabber(DWORD_PTR pClientSoldierEntity);
 		void NoRecoil(bool bIsEnable);
 		void IncreaseFireRate(bool bIsEnable, float flRate = 0.02f);
+
+		void DrawScreen(__int64 RenderBase);
 	};
 
 	extern std::unique_ptr<CFeatures> pFeatures;

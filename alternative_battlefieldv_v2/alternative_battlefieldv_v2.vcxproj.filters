@@ -28,6 +28,9 @@
     <Filter Include="src\key_helper">
       <UniqueIdentifier>{df507413-d979-4c39-8a9c-6f67dd033668}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\color">
+      <UniqueIdentifier>{d878dfdd-9cbb-418a-a548-61a034b3b118}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\alternative.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="src\key_helper\key_helper.cpp">
       <Filter>src\key_helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Color\color.cpp">
+      <Filter>src\color</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="src\key_helper\key_helper.h">
       <Filter>src\key_helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Color\color.h">
+      <Filter>src\color</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

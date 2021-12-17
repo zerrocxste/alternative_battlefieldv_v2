@@ -7,6 +7,7 @@ namespace HookManager
 		bool Hook_sub1420C7C90(bool bDoHook);
 		bool Hook_sub140970280(bool bDoHook);
 		bool Hook_sub14958F0D0(bool bDoHook);
+		bool Hook_sub1405C10A0(bool bDoHook);
 	public:
 		CHookManager();
 		~CHookManager();

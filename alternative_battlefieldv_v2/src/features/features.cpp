@@ -225,5 +225,21 @@ namespace Features
 		}
 	}
 
+	void CFeatures::DrawEngineText(__int64 RenderBase, int x, int y, const char* pszText, std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a, float flTextSize)
+	{
+		static auto Address = memory_utils::pattern_scanner_module(memory_utils::get_base(), 
+			"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x4C\x89\x00\x44\x89\x00\x89\xD5", "xx???xx???xx???xxxx?xx?xx?xx");
+
+		if (!Address)
+			return;
+
+		(*(void(__fastcall*)(__int64, int, int, __int64, int, float))Address)(RenderBase, x, y, (__int64)pszText, Color(r, g, b, a).AtByteArr(), flTextSize);
+	}
+
+	void CFeatures::DrawScreen(__int64 RenderBase)
+	{
+		DrawEngineText(RenderBase, 10, 10, "Example \"DebugRender\" draw text", 255, 0, 0, 255, 1.2f);
+	}
+
 	std::unique_ptr<CFeatures> pFeatures = std::make_unique<CFeatures>();
 }
