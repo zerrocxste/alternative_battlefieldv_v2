@@ -12,8 +12,10 @@ namespace Features
 		this->m_vClientSoldierEntityList.clear();
 
 		PatchDrawNameTagsAlwaysVisible(false);
+		PatchNameTagDrawExtendedInfo(false);
 		NoRecoil(false);
 		IncreaseFireRate(false);
+		PatchInScopeReloading(false);
 	}
 
 	void CFeatures::MainRadarHackWork()
@@ -225,7 +227,24 @@ namespace Features
 		}
 	}
 
-	void CFeatures::DrawEngineText(__int64 RenderBase, int x, int y, const char* pszText, std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a, float flTextSize)
+	void CFeatures::PatchInScopeReloading(bool bIsEnable)
+	{
+		auto PatchAddress = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x74\x00\x45\x89\x00\x00\x00\x00\x00\x44\x38", "x?xx?????xx");
+
+		if (!PatchAddress)
+			return;
+
+		if (bIsEnable)
+		{
+			memory_utils::patch_instruction(PatchAddress, "\xEB", 1);
+		}
+		else
+		{
+			memory_utils::patch_instruction(PatchAddress, "\x74", 1);
+		}
+	}
+
+	void CFeatures::DrawEngineText(__int64 pUnk, int x, int y, const char* pszText, Color color, float flTextSize)
 	{
 		static auto Address = memory_utils::pattern_scanner_module(memory_utils::get_base(), 
 			"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x4C\x89\x00\x44\x89\x00\x89\xD5", "xx???xx???xx???xxxx?xx?xx?xx");
@@ -233,13 +252,113 @@ namespace Features
 		if (!Address)
 			return;
 
-		(*(void(__fastcall*)(__int64, int, int, __int64, int, float))Address)(RenderBase, x, y, (__int64)pszText, Color(r, g, b, a).AtByteArr(), flTextSize);
+		(*(void(__fastcall*)(__int64, int, int, __int64, int, float))Address)(pUnk, x, y, (__int64)pszText, color.AtByteArr(), flTextSize);
 	}
 
-	void CFeatures::DrawScreen(__int64 RenderBase)
+	void CFeatures::MenuStartPos(int x, int y, std::uint32_t* iCurrentlyTabHovered)
 	{
-		DrawEngineText(RenderBase, 10, 10, "Example \"DebugRender\" draw text", 255, 0, 0, 255, 1.2f);
+		using namespace KeyHelper;
+
+		this->m_bMenuNewPosStarted = true;
+		this->m_iNewPosX = x;
+		this->m_iNewPosY = y;
+		this->m_pMenuCurrentlySelected = iCurrentlyTabHovered;
+		this->m_bReturnIsPressed = pKeyHelper->IsKeyDowned(VK_RETURN);
+	}
+
+	void CFeatures::MenuEndPos()
+	{
+		using namespace KeyHelper;
+
+		if (pKeyHelper->IsKeyDowned(VK_UP) && *this->m_pMenuCurrentlySelected != 0)
+			*this->m_pMenuCurrentlySelected -= 1;
+
+		if (pKeyHelper->IsKeyDowned(VK_DOWN) && *this->m_pMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
+			*this->m_pMenuCurrentlySelected += 1;
+
+		this->m_bMenuNewPosStarted = false;
+		this->m_iNewPosX = this->m_iNewPosY = 0;
+		this->m_iCurrentlyTabItemsSize = 0;
+		this->m_pMenuCurrentlySelected = nullptr;
+	}
+
+	bool CFeatures::MenuAddTabCheckbox(__int64 pUnk, const char* pszTabName, bool* pVarible)
+	{
+		using namespace KeyHelper;
+
+		auto bClicked = false;
+
+		if (!this->m_bMenuNewPosStarted)
+			return bClicked;
+
+		constexpr auto flTextSize = 2.f;
+		constexpr auto iItemSpace = 15 * flTextSize;
+
+		auto bCurrentItemHovered = this->m_iCurrentlyTabItemsSize == *this->m_pMenuCurrentlySelected;
+
+		auto color = Color::Green();
+
+		if (*pVarible)
+			color = Color::Blue();
+		if (bCurrentItemHovered)
+			color = Color::Red();
+		if (*pVarible && bCurrentItemHovered)
+			color = Color::Magenta();
+
+		DrawEngineText(pUnk, 20, 40 + (iItemSpace * this->m_iCurrentlyTabItemsSize), pszTabName, color, flTextSize);
+		
+		if (bCurrentItemHovered && this->m_bReturnIsPressed)
+		{
+			bClicked = true;
+			*pVarible = !*pVarible;
+		}
+		
+		this->m_iCurrentlyTabItemsSize++;
+
+		return bClicked;
+	}
+
+	void CFeatures::DrawMenu(__int64 pUnk)
+	{
+		using namespace KeyHelper;
+		using namespace Vars;
+
+		if (pKeyHelper->IsKeyReleased(VK_INSERT))
+			pVars->m_MenuVars.m_bMenuOpened = !pVars->m_MenuVars.m_bMenuOpened;
+
+		if (!pVars->m_MenuVars.m_bMenuOpened)
+			return;
+
+		static std::uint32_t iCurrenlyItemHovered = 0;
+		MenuStartPos(20, 50, &iCurrenlyItemHovered);
+
+		MenuAddTabCheckbox(pUnk, "In game radar", &pVars->m_HackVars.m_bRadarActive);
+
+		if (MenuAddTabCheckbox(pUnk, "Nametags always visible", &pVars->m_HackVars.m_bNameTagsAlwaysVisible))
+			PatchDrawNameTagsAlwaysVisible(pVars->m_HackVars.m_bNameTagsAlwaysVisible);
+
+		if (MenuAddTabCheckbox(pUnk, "Nametag extended info", &pVars->m_HackVars.m_bNameTagDrawExtendedInfo))
+			PatchNameTagDrawExtendedInfo(pVars->m_HackVars.m_bNameTagDrawExtendedInfo);
+
+		if (MenuAddTabCheckbox(pUnk, "No recoil", &pVars->m_HackVars.m_bNoRecoil))
+			NoRecoil(pVars->m_HackVars.m_bNoRecoil);
+
+		if (MenuAddTabCheckbox(pUnk, "Increase fire rate", &pVars->m_HackVars.m_bIncreaseFireRate))
+			IncreaseFireRate(pVars->m_HackVars.m_bIncreaseFireRate);
+
+		if (MenuAddTabCheckbox(pUnk, "Reload in scope", &pVars->m_HackVars.m_bReloadInScope))
+			PatchInScopeReloading(pVars->m_HackVars.m_bReloadInScope);
+
+		MenuEndPos();
+	}
+
+	void CFeatures::DrawScreen(__int64 pUnk)
+	{
+		DrawEngineText(pUnk, 10, 10, "by zerrocxste", Color::Red(), 1.2f);
+
+		DrawMenu(pUnk);
 	}
 
 	std::unique_ptr<CFeatures> pFeatures = std::make_unique<CFeatures>();
 }
+

@@ -61,3 +61,18 @@ Color Color::Blue()
 {
 	return Color(0, 0, 255);
 }
+
+Color Color::Yellow()
+{
+	return Color(255, 255, 0);
+}
+
+Color Color::Magenta()
+{
+	return Color(255, 0, 255);
+}
+
+Color Color::Aqua()
+{
+	return Color(0, 255, 255);
+}

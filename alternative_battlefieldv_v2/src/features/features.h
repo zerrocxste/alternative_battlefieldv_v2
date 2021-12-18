@@ -7,10 +7,22 @@ namespace Features
 		DWORD_PTR m_pLocalClientSoldierEntity;
 		std::vector<DWORD_PTR> m_vClientSoldierEntityList;
 
+		bool m_bMenuNewPosStarted;
+		std::uint32_t m_iNewPosX, m_iNewPosY;
+		std::uint32_t m_iCurrentlyTabItemsSize;
+		std::uint32_t* m_pMenuCurrentlySelected;
+		bool m_bReturnIsPressed;
+
 		void MainRadarHackWork();
 		void LockupRadarHackMutex();
 
-		void DrawEngineText(__int64 RenderBase, int x, int y, const char* pszText, std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a, float flTextSize);
+		void DrawEngineText(__int64 pUnk, int x, int y, const char* pszText, Color color, float flTextSize);
+
+		void MenuStartPos(int x, int y, std::uint32_t* iCurrentlyTabHovered);
+		void MenuEndPos();
+		bool MenuAddTabCheckbox(__int64 pUnk, const char* pszTabName, bool* pVarible);
+		
+		void DrawMenu(__int64 pUnk);
 	public:
 		CFeatures();
 		~CFeatures();
@@ -23,8 +35,9 @@ namespace Features
 		void LocalpClientSoldierEntityGrabber(DWORD_PTR pClientSoldierEntity);
 		void NoRecoil(bool bIsEnable);
 		void IncreaseFireRate(bool bIsEnable, float flRate = 0.02f);
+		void PatchInScopeReloading(bool bIsEnable);
 
-		void DrawScreen(__int64 RenderBase);
+		void DrawScreen(__int64 pUnk);
 	};
 
 	extern std::unique_ptr<CFeatures> pFeatures;
