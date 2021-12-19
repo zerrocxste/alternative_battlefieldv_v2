@@ -17,7 +17,6 @@ Color::Color(std::uint8_t R, std::uint8_t G, std::uint8_t B) : r(R), g(G), b(B),
 
 Color::Color(std::uint32_t hex)
 {
-	r = g = b = a = 0;
 	memcpy(this, &hex, 4);
 }
 
@@ -28,13 +27,15 @@ Color::~Color()
 
 std::uint8_t& Color::operator[](std::uint32_t idx)
 {
+	if (idx > RGBA_MAX_SIZE)
+		throw;
+
 	return ((std::uint8_t*)(this))[idx];
 }
 
 int Color::AtByteArr()
 {
 	int Color = 0;
-	std::uint8_t* ByteArrColor = (std::uint8_t*)&Color;
 	memcpy(&Color, this, 4);
 	return Color;
 }
@@ -75,4 +76,19 @@ Color Color::Magenta()
 Color Color::Aqua()
 {
 	return Color(0, 255, 255);
+}
+
+Color Color::Grey()
+{
+	return Color(128, 128, 128);
+}
+
+Color Color::White()
+{
+	return Color(255, 255, 255);
+}
+
+Color Color::Black()
+{
+	return Color(0, 0, 0);
 }

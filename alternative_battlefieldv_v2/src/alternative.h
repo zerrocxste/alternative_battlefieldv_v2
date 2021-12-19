@@ -23,4 +23,5 @@
 #include "color/color.h"
 
 #include "hook_manager/hook_manager.h"
+#include "frostbite_drawing/frostbite_drawing.h"
 #include "features/features.h"

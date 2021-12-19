@@ -1,32 +1,24 @@
 #include "../alternative.h"
 
-namespace KeyHelper
+bool KeyHelper::IsKeyPressed(int iVkCode)
 {
-	CKeyHelper::CKeyHelper()
-	{
-		memset(this, 0, sizeof(*this));
-	}
+	return GetAsyncKeyState(iVkCode);
+}
 
-	CKeyHelper::~CKeyHelper()
-	{
+bool KeyHelper::IsKeyDowned(int iVkCode)
+{
+	static bool bKeyMapDowned[255];
+	bool bIsPressed = GetAsyncKeyState(iVkCode);
+	bool ret = bIsPressed && !bKeyMapDowned[iVkCode];
+	bKeyMapDowned[iVkCode] = bIsPressed;
+	return ret;
+}
 
-	}
-
-	bool CKeyHelper::IsKeyReleased(int iVkCode)
-	{
-		bool bIsPressed = GetAsyncKeyState(iVkCode);
-		bool ret = !bIsPressed && this->m_bKeyMap[iVkCode];
-		this->m_bKeyMap[iVkCode] = bIsPressed;
-		return ret;
-	}
-
-	bool CKeyHelper::IsKeyDowned(int iVkCode)
-	{
-		bool bIsPressed = GetAsyncKeyState(iVkCode);
-		bool ret = bIsPressed && !this->m_bKeyMap[iVkCode];
-		this->m_bKeyMap[iVkCode] = bIsPressed;
-		return ret;
-	}
-
-	std::unique_ptr<CKeyHelper> pKeyHelper = std::make_unique<CKeyHelper>();
+bool KeyHelper::IsKeyReleased(int iVkCode)
+{
+	static bool bKeyMapReleased[255];
+	bool bIsPressed = GetAsyncKeyState(iVkCode);
+	bool ret = !bIsPressed && bKeyMapReleased[iVkCode];
+	bKeyMapReleased[iVkCode] = bIsPressed;
+	return ret;
 }

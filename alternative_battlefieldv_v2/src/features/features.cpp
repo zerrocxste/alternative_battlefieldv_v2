@@ -140,7 +140,7 @@ namespace Features
 
 		if (!PatchAddressVisibleCheck || !PatchAddressWriteVaribles || !PatchAddressSmokeCheck)
 		{
-			Console::PrintLogTime(__FUNCTION__, "Sig not found");
+			Console::PrintLogTime(false, __FUNCTION__, "Sig not found");
 			return;
 		}
 
@@ -168,7 +168,7 @@ namespace Features
 
 		if (!PatchAddress)
 		{
-			Console::PrintLogTime(__FUNCTION__, "Sig not found");
+			Console::PrintLogTime(false, __FUNCTION__, "Sig not found");
 			return;
 		}
 
@@ -189,7 +189,7 @@ namespace Features
 
 		if (!WeaponRecoilPitchWriterInstruction || !WeaponRecoilYawWriterInstruction)
 		{
-			Console::PrintLogTime(__FUNCTION__, "Sig not found");
+			Console::PrintLogTime(false, __FUNCTION__, "Sig not found");
 			return;
 		}
 
@@ -244,70 +244,77 @@ namespace Features
 		}
 	}
 
-	void CFeatures::DrawEngineText(__int64 pUnk, int x, int y, const char* pszText, Color color, float flTextSize)
-	{
-		static auto Address = memory_utils::pattern_scanner_module(memory_utils::get_base(), 
-			"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x4C\x89\x00\x44\x89\x00\x89\xD5", "xx???xx???xx???xxxx?xx?xx?xx");
-
-		if (!Address)
-			return;
-
-		(*(void(__fastcall*)(__int64, int, int, __int64, int, float))Address)(pUnk, x, y, (__int64)pszText, color.AtByteArr(), flTextSize);
-	}
-
-	void CFeatures::MenuStartPos(int x, int y, std::uint32_t* iCurrentlyTabHovered)
+	void CFeatures::MenuStartPos(__int64 pUnk, const char* pszName, int x, int y, int iSizeX, int iSizeY, std::uint32_t* iCurrentlyTabHovered, float flFontSize)
 	{
 		using namespace KeyHelper;
 
 		this->m_bMenuNewPosStarted = true;
 		this->m_iNewPosX = x;
 		this->m_iNewPosY = y;
-		this->m_pMenuCurrentlySelected = iCurrentlyTabHovered;
-		this->m_bReturnIsPressed = pKeyHelper->IsKeyDowned(VK_RETURN);
+		this->m_piMenuCurrentlySelected = iCurrentlyTabHovered;
+		this->m_flFontSize = flFontSize;
+		this->m_bReturnIsPressed = IsKeyPressed(VK_RETURN);
+		this->m_bReturnIsDowned = IsKeyDowned(VK_RETURN);
+		this->m_bReturnIsReleased = IsKeyReleased(VK_RETURN);
+
+		FrostbiteDrawing::DrawEngineFilledRect(pUnk, this->m_iNewPosX, this->m_iNewPosY, this->m_iNewPosX + iSizeX, this->m_iNewPosY + iSizeY, Color::Grey());
+
+		auto iTitleBarSize = 18.f * flFontSize;
+		FrostbiteDrawing::DrawEngineFilledRect(pUnk, this->m_iNewPosX, this->m_iNewPosY, this->m_iNewPosX + iSizeX, this->m_iNewPosY + iTitleBarSize, Color::White());
+		FrostbiteDrawing::DrawEngineText(pUnk, this->m_iNewPosX + 3, this->m_iNewPosY + 3, pszName, Color::Black(), this->m_flFontSize);
+
+		this->m_iNewPosX += 10;
+		this->m_iNewPosY += iTitleBarSize + 10;
 	}
 
 	void CFeatures::MenuEndPos()
 	{
 		using namespace KeyHelper;
 
-		if (pKeyHelper->IsKeyDowned(VK_UP) && *this->m_pMenuCurrentlySelected != 0)
-			*this->m_pMenuCurrentlySelected -= 1;
+		if (IsKeyDowned(VK_UP) && *this->m_piMenuCurrentlySelected != 0)
+			*this->m_piMenuCurrentlySelected -= 1;
 
-		if (pKeyHelper->IsKeyDowned(VK_DOWN) && *this->m_pMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
-			*this->m_pMenuCurrentlySelected += 1;
+		if (IsKeyDowned(VK_DOWN) && *this->m_piMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
+			*this->m_piMenuCurrentlySelected += 1;
 
 		this->m_bMenuNewPosStarted = false;
 		this->m_iNewPosX = this->m_iNewPosY = 0;
 		this->m_iCurrentlyTabItemsSize = 0;
-		this->m_pMenuCurrentlySelected = nullptr;
+		this->m_piMenuCurrentlySelected = nullptr;
+		this->m_flFontSize = 0;
+		this->m_bReturnIsDowned = false;
+		this->m_bReturnIsPressed = false;
+		this->m_bReturnIsReleased = false;
 	}
 
 	bool CFeatures::MenuAddTabCheckbox(__int64 pUnk, const char* pszTabName, bool* pVarible)
 	{
 		using namespace KeyHelper;
 
+		constexpr auto iNameMaxSize = 64;
+
 		auto bClicked = false;
 
-		if (!this->m_bMenuNewPosStarted)
+		if (!this->m_bMenuNewPosStarted || strlen(pszTabName) > iNameMaxSize)
 			return bClicked;
 
-		constexpr auto flTextSize = 2.f;
-		constexpr auto iItemSpace = 15 * flTextSize;
-
-		auto bCurrentItemHovered = this->m_iCurrentlyTabItemsSize == *this->m_pMenuCurrentlySelected;
+		auto bCurrentItemHovered = this->m_iCurrentlyTabItemsSize == *this->m_piMenuCurrentlySelected;
+		auto bCurrentItemClicked = bCurrentItemHovered && this->m_bReturnIsPressed;
 
 		auto color = Color::Green();
-
-		if (*pVarible)
-			color = Color::Blue();
 		if (bCurrentItemHovered)
 			color = Color::Red();
-		if (*pVarible && bCurrentItemHovered)
-			color = Color::Magenta();
+		if (bCurrentItemClicked)
+			color = Color::Blue();
 
-		DrawEngineText(pUnk, 20, 40 + (iItemSpace * this->m_iCurrentlyTabItemsSize), pszTabName, color, flTextSize);
+		auto iItemSpace = 15 * this->m_flFontSize;
+
+		char buf[3 + 1 + iNameMaxSize] = { 0 };
+		*pVarible ? strcpy(buf, "[+] ") : strcpy(buf, "[-] ");
+		strcpy(buf + 4, pszTabName);
+		FrostbiteDrawing::DrawEngineText(pUnk, this->m_iNewPosX, this->m_iNewPosY + (iItemSpace * this->m_iCurrentlyTabItemsSize), buf, color, this->m_flFontSize);
 		
-		if (bCurrentItemHovered && this->m_bReturnIsPressed)
+		if (bCurrentItemHovered && this->m_bReturnIsReleased)
 		{
 			bClicked = true;
 			*pVarible = !*pVarible;
@@ -323,14 +330,14 @@ namespace Features
 		using namespace KeyHelper;
 		using namespace Vars;
 
-		if (pKeyHelper->IsKeyReleased(VK_INSERT))
+		if (IsKeyReleased(VK_INSERT))
 			pVars->m_MenuVars.m_bMenuOpened = !pVars->m_MenuVars.m_bMenuOpened;
 
 		if (!pVars->m_MenuVars.m_bMenuOpened)
 			return;
 
 		static std::uint32_t iCurrenlyItemHovered = 0;
-		MenuStartPos(20, 50, &iCurrenlyItemHovered);
+		MenuStartPos(pUnk, "alternative hack", 20, 50, 350, 130, &iCurrenlyItemHovered, 1.f);
 
 		MenuAddTabCheckbox(pUnk, "In game radar", &pVars->m_HackVars.m_bRadarActive);
 
@@ -340,10 +347,10 @@ namespace Features
 		if (MenuAddTabCheckbox(pUnk, "Nametag extended info", &pVars->m_HackVars.m_bNameTagDrawExtendedInfo))
 			PatchNameTagDrawExtendedInfo(pVars->m_HackVars.m_bNameTagDrawExtendedInfo);
 
-		if (MenuAddTabCheckbox(pUnk, "No recoil", &pVars->m_HackVars.m_bNoRecoil))
+		if (MenuAddTabCheckbox(pUnk, "No recoil (Ban risk)", &pVars->m_HackVars.m_bNoRecoil))
 			NoRecoil(pVars->m_HackVars.m_bNoRecoil);
 
-		if (MenuAddTabCheckbox(pUnk, "Increase fire rate", &pVars->m_HackVars.m_bIncreaseFireRate))
+		if (MenuAddTabCheckbox(pUnk, "Increase fire rate (Ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
 			IncreaseFireRate(pVars->m_HackVars.m_bIncreaseFireRate);
 
 		if (MenuAddTabCheckbox(pUnk, "Reload in scope", &pVars->m_HackVars.m_bReloadInScope))
@@ -354,7 +361,7 @@ namespace Features
 
 	void CFeatures::DrawScreen(__int64 pUnk)
 	{
-		DrawEngineText(pUnk, 10, 10, "by zerrocxste", Color::Red(), 1.2f);
+		FrostbiteDrawing::DrawEngineText(pUnk, 10, 10, "by zerrocxste", Color::Red(), 1.2f);
 
 		DrawMenu(pUnk);
 	}

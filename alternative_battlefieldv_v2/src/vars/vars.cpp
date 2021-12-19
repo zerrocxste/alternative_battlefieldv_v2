@@ -16,7 +16,8 @@ namespace Vars
 
 	void CVars::LoadDefaultVars()
 	{
-		
+		this->m_HackVars.m_bRadarActive = true;
+		//
 	}
 
 	std::unique_ptr<CVars> pVars = std::make_unique<CVars>();

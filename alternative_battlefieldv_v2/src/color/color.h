@@ -28,6 +28,9 @@ public:
 	static Color Yellow();
 	static Color Magenta();
 	static Color Aqua();
+	static Color Grey();
+	static Color White();
+	static Color Black();
 private:
 	std::uint8_t r, g, b, a;
 };

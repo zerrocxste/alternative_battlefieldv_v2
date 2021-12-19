@@ -32,12 +32,12 @@ void __fastcall sub14958F0D0_hooked(__int64 param_1, __int64 param_2, int param_
 	if (Vars::pVars->m_HackVars.m_bIncreaseFireRate && bFireSoundIndexIsLocal)
 	{
 		static int iSkippedSound = 0;
-		static __int64 pLastArg1 = 0;
+		static __int64 LastArg1 = 0;
 
 		iSkippedSound++;
 
 		if (!Vars::pVars->m_BackendVars.m_bUpdatedSoundLButtonReleased && 
-			param_1 == pLastArg1 &&
+			param_1 == LastArg1 &&
 			 iSkippedSound < 5)
 			return;
 		else
@@ -45,7 +45,7 @@ void __fastcall sub14958F0D0_hooked(__int64 param_1, __int64 param_2, int param_
 
 		Vars::pVars->m_BackendVars.m_bUpdatedSoundLButtonReleased = false;
 
-		pLastArg1 = param_1;
+		LastArg1 = param_1;
 	}
 
 	pfsub14958F0D0(param_1, param_2, param_3, param_4, param_5);
@@ -73,7 +73,17 @@ namespace HookManager
 
 	CHookManager::~CHookManager()
 	{
+		//UnhookAll();
+	}
 
+	void* CHookManager::FindFunctionMainModule(const char* pszPattern, const char* pszMask)
+	{
+		auto Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(), pszPattern, pszMask);
+
+		if (Address)
+			this->m_vFunctionsAddressessList.push_back(Address);
+
+		return Address;
 	}
 
 	bool CHookManager::DisableHook(void* Address)
@@ -87,91 +97,62 @@ namespace HookManager
 		return true;
 	}
 
-	bool CHookManager::Hook_sub1420C7C90(bool bDoHook)
+	bool CHookManager::Hook_sub1420C7C90()
 	{
-		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(),
-			"\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x48\x8B\x00\x00\x48\x8B\x00\x48\x8B\x00\x48\x8B\x00\xFF\x90", "xx???xxxx?xx??xx?xx?xx?xx");
+		static void* Address = FindFunctionMainModule("\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x48\x8B\x00\x00\x48\x8B\x00\x48\x8B\x00\x48\x8B\x00\xFF\x90", 
+			"xx???xxxx?xx??xx?xx?xx?xx");
+	
+		if (!Address)
+			return false;
 
-		if (bDoHook)
-		{
-			if (MH_CreateHook(Address, sub1420C7C90_hooked, (LPVOID*)&pfsub1420C7C90) != MH_OK)
-				return false;
+		if (MH_CreateHook(Address, sub1420C7C90_hooked, (LPVOID*)&pfsub1420C7C90) != MH_OK)
+			return false;
 
-			if (MH_EnableHook(Address) != MH_OK)
-				return false;
-		}
-		else
-		{
-			if (!DisableHook(Address))
-				return false;
-		}
+		if (MH_EnableHook(Address) != MH_OK)
+			return false;
 
 		return true;
 	}
 
-	bool CHookManager::Hook_sub140970280(bool bDoHook)
+	bool CHookManager::Hook_sub140970280()
 	{
-		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(),
-			"\x40\x00\x57\x41\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x28\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x4C\x8B", "x?xx?xxx?xxxxx????xx???xx???xx?xx");
+		static void* Address = (void*)FindFunctionMainModule(
+			"\x40\x00\x57\x41\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x28\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x4C\x8B", 
+			"x?xx?xxx?xxxxx????xx???xx???xx?xx");
 
-		if (bDoHook)
-		{
-			if (MH_CreateHook(Address, sub140970280_hooked, (LPVOID*)&pfsub140970280) != MH_OK)
-				return false;
+		if (MH_CreateHook(Address, sub140970280_hooked, (LPVOID*)&pfsub140970280) != MH_OK)
+			return false;
 
-			if (MH_EnableHook(Address) != MH_OK)
-				return false;
-		}
-		else
-		{
-			if (!DisableHook(Address))
-				return false;
-		}
+		if (MH_EnableHook(Address) != MH_OK)
+			return false;
 
 		return true;
 	}
 
-	bool CHookManager::Hook_sub14958F0D0(bool bDoHook)
+	bool CHookManager::Hook_sub14958F0D0()
 	{
-		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(),
-			"\x44\x0F\x00\x00\x00\x00\x00\x00\x41\xF6\xC1\x00\x75", "xx??????xxx?x");
+		static void* Address = (void*)FindFunctionMainModule("\x44\x0F\x00\x00\x00\x00\x00\x00\x41\xF6\xC1\x00\x75", "xx??????xxx?x");
 
-		if (bDoHook)
-		{
-			if (MH_CreateHook(Address, sub14958F0D0_hooked, (LPVOID*)&pfsub14958F0D0) != MH_OK)
-				return false;
+		if (MH_CreateHook(Address, sub14958F0D0_hooked, (LPVOID*)&pfsub14958F0D0) != MH_OK)
+			return false;
 
-			if (MH_EnableHook(Address) != MH_OK)
-				return false;
-		}
-		else
-		{
-			if (!DisableHook(Address))
-				return false;
-		}
+		if (MH_EnableHook(Address) != MH_OK)
+			return false;
 		
 		return true;
 	}
 
-	bool CHookManager::Hook_sub1405C10A0(bool bDoHook)
+	bool CHookManager::Hook_sub1405C10A0()
 	{
-		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(),
+		static void* Address = (void*)FindFunctionMainModule(
 			"\x40\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x20\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x00\x00\x00\x00\x48\x85\x00\x75", 
 			"x?xxx?xxxxx????xx???xx???xx???xx?????xx?x");
 
-		if (bDoHook)
-		{
-			if (MH_CreateHook(Address, FUN_1405c10a0_hooked, (LPVOID*)&pFUN_1405c10a0) != MH_OK)
-				return false;
+		if (MH_CreateHook(Address, FUN_1405c10a0_hooked, (LPVOID*)&pFUN_1405c10a0) != MH_OK)
+			return false;
 
-			if (MH_EnableHook(Address) != MH_OK)
-				return false;
-		}
-		else
-		{
-			if (!DisableHook(Address))
-				return false;
-		}
+		if (MH_EnableHook(Address) != MH_OK)
+			return false;
 
 		return true;
 	}
@@ -180,64 +161,55 @@ namespace HookManager
 	{
 		if (MH_Initialize() != MH_OK)
 		{
-			Console::PrintLogTime(__FUNCTION__, "Minhook initialize error\n");
+			Console::PrintLogTime(true, __FUNCTION__, "Minhook initialize error\n");
 			return false;
 		}
 
-		if (!Hook_sub1420C7C90(true))
+		if (!Hook_sub1420C7C90())
 		{
-			Console::PrintLogTime(__FUNCTION__, "sub1420C7C90 hook failed\n");
+			Console::PrintLogTime(true, __FUNCTION__, "sub1420C7C90 hook failed\n");
 			return false;
 		}
 
-		if (!Hook_sub140970280(true))
+		if (!Hook_sub140970280())
 		{
-			Console::PrintLogTime(__FUNCTION__, "sub140970280 hook failed\n");
+			Console::PrintLogTime(true, __FUNCTION__, "sub140970280 hook failed\n");
 			return false;
 		}
 
-		if (!Hook_sub14958F0D0(true))
+		if (!Hook_sub14958F0D0())
 		{
-			Console::PrintLogTime(__FUNCTION__, "sub14958F0D0 hook failed\n");
+			Console::PrintLogTime(true, __FUNCTION__, "sub14958F0D0 hook failed\n");
 			return false;
 		}
 
-		if (!Hook_sub1405C10A0(true))
+		if (!Hook_sub1405C10A0())
 		{
-			Console::PrintLogTime(__FUNCTION__, "sub1405C10A0 hook failed\n");
+			Console::PrintLogTime(true, __FUNCTION__, "sub1405C10A0 hook failed\n");
 			return false;
 		}
 
 		return true;
 	}
 
-	bool CHookManager::DoUninitialize()
+	bool CHookManager::UnhookAll()
 	{
-		if (!Hook_sub1420C7C90(false))
+		auto ret = true;
+
+		for (auto& addr : this->m_vFunctionsAddressessList)
 		{
-			Console::PrintLogTime(__FUNCTION__, "sub1420C7C90 unhook failed\n");
-			return false;
+			if (!DisableHook(addr))
+			{
+				Console::PrintLogTime(true, __FUNCTION__, "Failed unhook at: 0x%p\n", addr);
+				ret = false;
+			}
 		}
 
-		if (!Hook_sub140970280(false))
-		{
-			Console::PrintLogTime(__FUNCTION__, "sub140970280 unhook failed\n");
-			return false;
-		}
+		MH_Uninitialize();
 
-		if (!Hook_sub14958F0D0(false))
-		{
-			Console::PrintLogTime(__FUNCTION__, "sub14958F0D0 unhook failed\n");
-			return false;
-		}
+		std::this_thread::sleep_for(std::chrono::microseconds(500));
 
-		if (!Hook_sub1405C10A0(false))
-		{
-			Console::PrintLogTime(__FUNCTION__, "sub1405C10A0 unhook failed\n");
-			return false;
-		}
-
-		return MH_Uninitialize() == MH_OK;
+		return ret;
 	}
 
 	std::unique_ptr<CHookManager> pHookManager = std::make_unique<CHookManager>();
