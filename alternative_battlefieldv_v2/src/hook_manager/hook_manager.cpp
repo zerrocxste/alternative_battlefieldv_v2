@@ -68,7 +68,7 @@ namespace HookManager
 {
 	CHookManager::CHookManager()
 	{
-		memset(this, 0, sizeof(*this));
+
 	}
 
 	CHookManager::~CHookManager()
@@ -116,7 +116,7 @@ namespace HookManager
 
 	bool CHookManager::Hook_sub140970280()
 	{
-		static void* Address = (void*)FindFunctionMainModule(
+		static void* Address = FindFunctionMainModule(
 			"\x40\x00\x57\x41\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x28\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x4C\x8B", 
 			"x?xx?xxx?xxxxx????xx???xx???xx?xx");
 
@@ -131,7 +131,7 @@ namespace HookManager
 
 	bool CHookManager::Hook_sub14958F0D0()
 	{
-		static void* Address = (void*)FindFunctionMainModule("\x44\x0F\x00\x00\x00\x00\x00\x00\x41\xF6\xC1\x00\x75", "xx??????xxx?x");
+		static void* Address = FindFunctionMainModule("\x44\x0F\x00\x00\x00\x00\x00\x00\x41\xF6\xC1\x00\x75", "xx??????xxx?x");
 
 		if (MH_CreateHook(Address, sub14958F0D0_hooked, (LPVOID*)&pfsub14958F0D0) != MH_OK)
 			return false;
@@ -144,7 +144,7 @@ namespace HookManager
 
 	bool CHookManager::Hook_sub1405C10A0()
 	{
-		static void* Address = (void*)FindFunctionMainModule(
+		static void* Address = FindFunctionMainModule(
 			"\x40\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x20\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x00\x00\x00\x00\x48\x85\x00\x75", 
 			"x?xxx?xxxxx????xx???xx???xx???xx?????xx?x");
 

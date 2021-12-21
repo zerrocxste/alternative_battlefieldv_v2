@@ -25,7 +25,7 @@ void MainHackThread(void* arg)
 		goto failed_jmp;
 	}
 
-	while (!GetAsyncKeyState(VK_DELETE))
+	while (!KeyHelper::IsKeyPressed(VK_DELETE))
 	{
 		MainRoutine();
 		std::this_thread::sleep_for(std::chrono::nanoseconds(1));

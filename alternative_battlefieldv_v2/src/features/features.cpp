@@ -4,7 +4,7 @@ namespace Features
 {
 	CFeatures::CFeatures() : m_pLocalClientSoldierEntity(0)
 	{
-
+		m_pFrostbiteGui = std::make_unique<CFrostbiteGui>();
 	}
 
 	CFeatures::~CFeatures()
@@ -200,8 +200,8 @@ namespace Features
 		}
 		else
 		{
-			BYTE bOriginalRecoilPitchInstruction[5] = { 0xf3, 0x0f, 0x11, 0x47, 0x7c };
-			BYTE bOriginalRecoilYawInstruction[5] = { 0xf3, 0x0f, 0x11, 0x77, 0x78 };
+			static BYTE bOriginalRecoilPitchInstruction[5] = { 0xf3, 0x0f, 0x11, 0x47, 0x7c };
+			static BYTE bOriginalRecoilYawInstruction[5] = { 0xf3, 0x0f, 0x11, 0x77, 0x78 };
 			memory_utils::patch_instruction(WeaponRecoilPitchWriterInstruction, (const char*)&bOriginalRecoilPitchInstruction, 5);
 			memory_utils::patch_instruction(WeaponRecoilYawWriterInstruction, (const char*)&bOriginalRecoilYawInstruction, 5);
 		}
@@ -216,20 +216,20 @@ namespace Features
 
 		if (bIsEnable)
 		{
-			BYTE bFastfireratePatch[14] = { 0xc7, 0x87, 0xd4, 0x01, 0x00, 0x00, 0x0a, 0xd7, 0xa3, 0x3c, 0x90, 0x90, 0x90, 0x90 };
+			static BYTE bFastfireratePatch[14] = { 0xc7, 0x87, 0xd4, 0x01, 0x00, 0x00, 0x0a, 0xd7, 0xa3, 0x3c, 0x90, 0x90, 0x90, 0x90 };
 			memcpy(bFastfireratePatch + 0x6, &flRate, 4);
 			memory_utils::patch_instruction(WeaponFirerateWriterInstruction - 0x6, (const char*)&bFastfireratePatch, 14);
 		}
 		else
 		{
-			BYTE bOriginalFirerateInstruction[14] = { 0x89, 0x87, 0x60, 0x01, 0x00, 0x00, 0xf3, 0x0f, 0x11, 0x87, 0xd4, 0x01, 0x00, 0x00 };
+			static BYTE bOriginalFirerateInstruction[14] = { 0x89, 0x87, 0x60, 0x01, 0x00, 0x00, 0xf3, 0x0f, 0x11, 0x87, 0xd4, 0x01, 0x00, 0x00 };
 			memory_utils::patch_instruction(WeaponFirerateWriterInstruction - 0x6, (const char*)&bOriginalFirerateInstruction, 14);
 		}
 	}
 
 	void CFeatures::PatchInScopeReloading(bool bIsEnable)
 	{
-		auto PatchAddress = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x74\x00\x45\x89\x00\x00\x00\x00\x00\x44\x38", "x?xx?????xx");
+		static auto PatchAddress = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x74\x00\x45\x89\x00\x00\x00\x00\x00\x44\x38", "x?xx?????xx");
 
 		if (!PatchAddress)
 			return;
@@ -244,126 +244,42 @@ namespace Features
 		}
 	}
 
-	void CFeatures::MenuStartPos(__int64 pUnk, const char* pszName, int x, int y, int iSizeX, int iSizeY, std::uint32_t* iCurrentlyTabHovered, float flFontSize)
-	{
-		using namespace KeyHelper;
-
-		this->m_bMenuNewPosStarted = true;
-		this->m_iNewPosX = x;
-		this->m_iNewPosY = y;
-		this->m_piMenuCurrentlySelected = iCurrentlyTabHovered;
-		this->m_flFontSize = flFontSize;
-		this->m_bReturnIsPressed = IsKeyPressed(VK_RETURN);
-		this->m_bReturnIsDowned = IsKeyDowned(VK_RETURN);
-		this->m_bReturnIsReleased = IsKeyReleased(VK_RETURN);
-
-		FrostbiteDrawing::DrawEngineFilledRect(pUnk, this->m_iNewPosX, this->m_iNewPosY, this->m_iNewPosX + iSizeX, this->m_iNewPosY + iSizeY, Color::Grey());
-
-		auto iTitleBarSize = 18.f * flFontSize;
-		FrostbiteDrawing::DrawEngineFilledRect(pUnk, this->m_iNewPosX, this->m_iNewPosY, this->m_iNewPosX + iSizeX, this->m_iNewPosY + iTitleBarSize, Color::White());
-		FrostbiteDrawing::DrawEngineText(pUnk, this->m_iNewPosX + 3, this->m_iNewPosY + 3, pszName, Color::Black(), this->m_flFontSize);
-
-		this->m_iNewPosX += 10;
-		this->m_iNewPosY += iTitleBarSize + 10;
-	}
-
-	void CFeatures::MenuEndPos()
-	{
-		using namespace KeyHelper;
-
-		if (IsKeyDowned(VK_UP) && *this->m_piMenuCurrentlySelected != 0)
-			*this->m_piMenuCurrentlySelected -= 1;
-
-		if (IsKeyDowned(VK_DOWN) && *this->m_piMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
-			*this->m_piMenuCurrentlySelected += 1;
-
-		this->m_bMenuNewPosStarted = false;
-		this->m_iNewPosX = this->m_iNewPosY = 0;
-		this->m_iCurrentlyTabItemsSize = 0;
-		this->m_piMenuCurrentlySelected = nullptr;
-		this->m_flFontSize = 0;
-		this->m_bReturnIsDowned = false;
-		this->m_bReturnIsPressed = false;
-		this->m_bReturnIsReleased = false;
-	}
-
-	bool CFeatures::MenuAddTabCheckbox(__int64 pUnk, const char* pszTabName, bool* pVarible)
-	{
-		using namespace KeyHelper;
-
-		constexpr auto iNameMaxSize = 64;
-
-		auto bClicked = false;
-
-		if (!this->m_bMenuNewPosStarted || strlen(pszTabName) > iNameMaxSize)
-			return bClicked;
-
-		auto bCurrentItemHovered = this->m_iCurrentlyTabItemsSize == *this->m_piMenuCurrentlySelected;
-		auto bCurrentItemClicked = bCurrentItemHovered && this->m_bReturnIsPressed;
-
-		auto color = Color::Green();
-		if (bCurrentItemHovered)
-			color = Color::Red();
-		if (bCurrentItemClicked)
-			color = Color::Blue();
-
-		auto iItemSpace = 15 * this->m_flFontSize;
-
-		char buf[3 + 1 + iNameMaxSize] = { 0 };
-		*pVarible ? strcpy(buf, "[+] ") : strcpy(buf, "[-] ");
-		strcpy(buf + 4, pszTabName);
-		FrostbiteDrawing::DrawEngineText(pUnk, this->m_iNewPosX, this->m_iNewPosY + (iItemSpace * this->m_iCurrentlyTabItemsSize), buf, color, this->m_flFontSize);
-		
-		if (bCurrentItemHovered && this->m_bReturnIsReleased)
-		{
-			bClicked = true;
-			*pVarible = !*pVarible;
-		}
-		
-		this->m_iCurrentlyTabItemsSize++;
-
-		return bClicked;
-	}
-
 	void CFeatures::DrawMenu(__int64 pUnk)
 	{
-		using namespace KeyHelper;
 		using namespace Vars;
 
-		if (IsKeyReleased(VK_INSERT))
-			pVars->m_MenuVars.m_bMenuOpened = !pVars->m_MenuVars.m_bMenuOpened;
-
-		if (!pVars->m_MenuVars.m_bMenuOpened)
-			return;
-
 		static std::uint32_t iCurrenlyItemHovered = 0;
-		MenuStartPos(pUnk, "alternative hack", 20, 50, 350, 130, &iCurrenlyItemHovered, 1.f);
+		this->m_pFrostbiteGui->MenuStartPos(pUnk, "alternative hack", 20, 50, 350, 130, &iCurrenlyItemHovered, 1.f);
 
-		MenuAddTabCheckbox(pUnk, "In game radar", &pVars->m_HackVars.m_bRadarActive);
+		this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "In game radar", &pVars->m_HackVars.m_bRadarActive);
 
-		if (MenuAddTabCheckbox(pUnk, "Nametags always visible", &pVars->m_HackVars.m_bNameTagsAlwaysVisible))
+		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "Nametags always visible", &pVars->m_HackVars.m_bNameTagsAlwaysVisible))
 			PatchDrawNameTagsAlwaysVisible(pVars->m_HackVars.m_bNameTagsAlwaysVisible);
 
-		if (MenuAddTabCheckbox(pUnk, "Nametag extended info", &pVars->m_HackVars.m_bNameTagDrawExtendedInfo))
+		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "Nametag extended info", &pVars->m_HackVars.m_bNameTagDrawExtendedInfo))
 			PatchNameTagDrawExtendedInfo(pVars->m_HackVars.m_bNameTagDrawExtendedInfo);
 
-		if (MenuAddTabCheckbox(pUnk, "No recoil (Ban risk)", &pVars->m_HackVars.m_bNoRecoil))
+		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "No recoil (Ban risk)", &pVars->m_HackVars.m_bNoRecoil))
 			NoRecoil(pVars->m_HackVars.m_bNoRecoil);
 
-		if (MenuAddTabCheckbox(pUnk, "Increase fire rate (Ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
+		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "Increase fire rate (Ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
 			IncreaseFireRate(pVars->m_HackVars.m_bIncreaseFireRate);
 
-		if (MenuAddTabCheckbox(pUnk, "Reload in scope", &pVars->m_HackVars.m_bReloadInScope))
+		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "Reload in scope", &pVars->m_HackVars.m_bReloadInScope))
 			PatchInScopeReloading(pVars->m_HackVars.m_bReloadInScope);
 
-		MenuEndPos();
+		this->m_pFrostbiteGui->MenuEndPos();
 	}
 
 	void CFeatures::DrawScreen(__int64 pUnk)
 	{
 		FrostbiteDrawing::DrawEngineText(pUnk, 10, 10, "by zerrocxste", Color::Red(), 1.2f);
 
-		DrawMenu(pUnk);
+		if (KeyHelper::IsKeyReleased(VK_INSERT))
+			Vars::pVars->m_MenuVars.m_bMenuOpened = !Vars::pVars->m_MenuVars.m_bMenuOpened;
+
+		if (Vars::pVars->m_MenuVars.m_bMenuOpened)
+			DrawMenu(pUnk);
 	}
 
 	std::unique_ptr<CFeatures> pFeatures = std::make_unique<CFeatures>();

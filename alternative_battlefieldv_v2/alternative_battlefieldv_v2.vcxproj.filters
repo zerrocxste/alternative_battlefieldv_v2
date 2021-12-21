@@ -34,6 +34,9 @@
     <Filter Include="src\frostbite_drawing">
       <UniqueIdentifier>{7bd4b8de-9dbb-4de0-8cfe-50ee1ed0e724}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\frostbite_gui">
+      <UniqueIdentifier>{dfb858a2-937b-4742-af90-12b18dad4eee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\alternative.cpp">
@@ -59,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="src\frostbite_drawing\frostbite_drawing.cpp">
       <Filter>src\frostbite_drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frostbite_gui\frostbite_gui.cpp">
+      <Filter>src\frostbite_gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="src\frostbite_drawing\frostbite_drawing.h">
       <Filter>src\frostbite_drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frostbite_gui\frostbite_gui.h">
+      <Filter>src\frostbite_gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

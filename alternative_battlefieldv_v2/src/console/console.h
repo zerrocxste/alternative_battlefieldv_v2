@@ -14,10 +14,10 @@ namespace Console
 		bIsConsoleInitialized = true;
 	}
 
-	static void PrintLogTime(bool bIsCriticalAndNeedAttachConsole, const char* pszFunctionName, const char* pszText, ...)
+	static void PrintLogTime(bool bNeedAttachConsole, const char* pszFunctionName, const char* pszText, ...)
 	{
-		if (bIsCriticalAndNeedAttachConsole && !bIsConsoleInitialized)
-			Attach("Critical error");
+		if (bNeedAttachConsole && !bIsConsoleInitialized)
+			Attach("");
 
 		if (!bIsConsoleInitialized)
 			return;

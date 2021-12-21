@@ -24,4 +24,5 @@
 
 #include "hook_manager/hook_manager.h"
 #include "frostbite_drawing/frostbite_drawing.h"
+#include "frostbite_gui/frostbite_gui.h"
 #include "features/features.h"

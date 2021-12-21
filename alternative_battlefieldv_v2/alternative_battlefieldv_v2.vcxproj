@@ -23,6 +23,7 @@
     <ClCompile Include="src\Color\color.cpp" />
     <ClCompile Include="src\features\features.cpp" />
     <ClCompile Include="src\frostbite_drawing\frostbite_drawing.cpp" />
+    <ClCompile Include="src\frostbite_gui\frostbite_gui.cpp" />
     <ClCompile Include="src\hook_manager\hook_manager.cpp" />
     <ClCompile Include="src\key_helper\key_helper.cpp" />
     <ClCompile Include="src\memory_utils\memory_utils.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="src\console\console.h" />
     <ClInclude Include="src\features\features.h" />
     <ClInclude Include="src\frostbite_drawing\frostbite_drawing.h" />
+    <ClInclude Include="src\frostbite_gui\frostbite_gui.h" />
     <ClInclude Include="src\hook_manager\hook_manager.h" />
     <ClInclude Include="src\key_helper\key_helper.h" />
     <ClInclude Include="src\memory_utils\memory_utils.h" />

@@ -65,13 +65,10 @@ namespace memory_utils
 		for (DWORD_PTR i = 0; i < size - patternLength; i += speed)
 		{
 			bool found = true;
-			for (DWORD_PTR j = 0; j < patternLength; j++)
+			for (int j = 0; j < patternLength; j++)
 			{
 				if (mask[j] == '?')
 					continue;
-
-				/*if (IsBadCodePtr((FARPROC)(base + i + j)) != NULL)
-					continue;*/
 
 				if (pattern[j] != *(char*)(base + i + j))
 				{
@@ -94,7 +91,7 @@ namespace memory_utils
 		DWORD_PTR base = (DWORD_PTR)module;
 		DWORD_PTR size = get_module_size(base);
 
-		DWORD_PTR patternLength = (DWORD_PTR)strlen(mask);
+		int patternLength = (int)strlen(mask);
 
 		return compare_mem(pattern, mask, base, size, patternLength, scan_speed);
 	}
