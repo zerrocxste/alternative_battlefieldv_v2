@@ -8,7 +8,7 @@ namespace Features
 
 		std::mutex m_mtxCollectData;
 
-		std::unique_ptr<CFrostbiteGui> m_pFrostbiteGui;
+		std::unique_ptr<FrostbiteGui::CFrostbiteGui> m_pFrostbiteGui;
 
 		void MainRadarHackWork();
 		void LockupRadarHackMutex();

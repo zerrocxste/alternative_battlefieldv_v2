@@ -2,9 +2,11 @@
 
 namespace Features
 {
-	CFeatures::CFeatures() : m_pLocalClientSoldierEntity(0)
+	CFeatures::CFeatures() : 
+		m_pLocalClientSoldierEntity(0), 
+		m_pFrostbiteGui(std::make_unique<FrostbiteGui::CFrostbiteGui>())
 	{
-		m_pFrostbiteGui = std::make_unique<CFrostbiteGui>();
+
 	}
 
 	CFeatures::~CFeatures()
@@ -249,34 +251,35 @@ namespace Features
 		using namespace Vars;
 
 		static std::uint32_t iCurrenlyItemHovered = 0;
-		this->m_pFrostbiteGui->MenuStartPos(pUnk, "alternative hack", 20, 50, 350, 130, &iCurrenlyItemHovered, 1.f);
 
-		this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "In game radar", &pVars->m_HackVars.m_bRadarActive);
+		this->m_pFrostbiteGui->MenuStartPos("alternative hack", 20, 50, &iCurrenlyItemHovered, 2.f);
 
-		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "Nametags always visible", &pVars->m_HackVars.m_bNameTagsAlwaysVisible))
+		this->m_pFrostbiteGui->AddCheckbox(pUnk, "In game radar", &pVars->m_HackVars.m_bRadarActive);
+
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Nametags always visible", &pVars->m_HackVars.m_bNameTagsAlwaysVisible))
 			PatchDrawNameTagsAlwaysVisible(pVars->m_HackVars.m_bNameTagsAlwaysVisible);
 
-		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "Nametag extended info", &pVars->m_HackVars.m_bNameTagDrawExtendedInfo))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Nametag extended info", &pVars->m_HackVars.m_bNameTagDrawExtendedInfo))
 			PatchNameTagDrawExtendedInfo(pVars->m_HackVars.m_bNameTagDrawExtendedInfo);
 
-		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "No recoil (Ban risk)", &pVars->m_HackVars.m_bNoRecoil))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "No recoil (Ban risk)", &pVars->m_HackVars.m_bNoRecoil))
 			NoRecoil(pVars->m_HackVars.m_bNoRecoil);
 
-		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "Increase fire rate (Ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Increase fire rate (Ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
 			IncreaseFireRate(pVars->m_HackVars.m_bIncreaseFireRate);
 
-		if (this->m_pFrostbiteGui->MenuAddTabCheckbox(pUnk, "Reload in scope", &pVars->m_HackVars.m_bReloadInScope))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Reload in scope", &pVars->m_HackVars.m_bReloadInScope))
 			PatchInScopeReloading(pVars->m_HackVars.m_bReloadInScope);
 
-		this->m_pFrostbiteGui->MenuEndPos();
+		this->m_pFrostbiteGui->MenuEndPos(pUnk);
 	}
 
 	void CFeatures::DrawScreen(__int64 pUnk)
 	{
-		FrostbiteDrawing::DrawEngineText(pUnk, 10, 10, "by zerrocxste", Color::Red(), 1.2f);
+		FrostbiteFunctions::Drawing::DrawEngineText(pUnk, 10, 10, "by zerrocxste", Color::Red(), 1.5f);
 
 		if (KeyHelper::IsKeyReleased(VK_INSERT))
-			Vars::pVars->m_MenuVars.m_bMenuOpened = !Vars::pVars->m_MenuVars.m_bMenuOpened;
+			FrostbiteFunctions::Input::SetBlockInput(Vars::pVars->m_MenuVars.m_bMenuOpened = !Vars::pVars->m_MenuVars.m_bMenuOpened);
 
 		if (Vars::pVars->m_MenuVars.m_bMenuOpened)
 			DrawMenu(pUnk);
