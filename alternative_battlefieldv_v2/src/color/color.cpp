@@ -45,6 +45,7 @@ Color& Color::MakeRand()
 	this->r = rand() % 255;
 	this->g = rand() % 255;
 	this->b = rand() % 255;
+	this->a = 255;
 	return *this;
 }
 

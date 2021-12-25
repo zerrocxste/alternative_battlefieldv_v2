@@ -13,6 +13,8 @@ void MainHackThread(void* arg)
 {
 	std::srand(std::time(nullptr));
 
+	Vars::pVars->m_CoreVars.hThisModule = (HMODULE)arg;
+
 #ifdef _USERDEBUG
 	Console::Attach("alternative | battlefield v");
 #endif

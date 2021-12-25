@@ -19,7 +19,7 @@ void FrostbiteFunctions::Drawing::DrawEngineText(__int64 pUnk, int x, int y, con
 	static auto Address = memory_utils::pattern_scanner_module(memory_utils::get_base(),
 		"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x4C\x89\x00\x44\x89\x00\x89\xD5", "xx???xx???xx???xxxx?xx?xx?xx");
 
-	if (!Address)
+	if (!Address || !pszText)
 		return;
 
 	(*(void(__fastcall*)(__int64, int, int, __int64, int, float))Address)(pUnk, x, y, (__int64)pszText, color.AtByteArr(), flTextSize);
@@ -59,4 +59,18 @@ void FrostbiteFunctions::Drawing::DrawEngineRect(__int64 pUnk, float x, float y,
 	DrawEngineLine(pUnk, x, y, x, y1, color);
 	DrawEngineLine(pUnk, x, y1, x1, y1, color);
 	DrawEngineLine(pUnk, x1, y, x1, y1, color);
+}
+
+int* FrostbiteFunctions::Drawing::GetGameScreenResolution()
+{
+	int iResolution[2] = { 0, 0 };
+
+	static auto Address = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x8B\x05\x00\x00\x00\x00\x89\x02\x8B\x05", "xx????xxxx");
+
+	if (!Address)
+		return iResolution;
+
+	(*(void(__fastcall*)(__int64, int*))Address)(0, iResolution);
+	
+	return iResolution;
 }

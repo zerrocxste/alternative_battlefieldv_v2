@@ -262,27 +262,35 @@ namespace Features
 		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Nametag extended info", &pVars->m_HackVars.m_bNameTagDrawExtendedInfo))
 			PatchNameTagDrawExtendedInfo(pVars->m_HackVars.m_bNameTagDrawExtendedInfo);
 
-		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "No recoil (Ban risk)", &pVars->m_HackVars.m_bNoRecoil))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Norecoil (Low ban risk)", &pVars->m_HackVars.m_bNoRecoil))
 			NoRecoil(pVars->m_HackVars.m_bNoRecoil);
 
-		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Increase fire rate (Ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "High firerate (Same, high ban risk with Norecoil!)", &pVars->m_HackVars.m_bIncreaseFireRate))
 			IncreaseFireRate(pVars->m_HackVars.m_bIncreaseFireRate);
 
 		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Reload in scope", &pVars->m_HackVars.m_bReloadInScope))
 			PatchInScopeReloading(pVars->m_HackVars.m_bReloadInScope);
+
+		this->m_pFrostbiteGui->AddText(pUnk, "");
+		this->m_pFrostbiteGui->AddText(pUnk, "by zerrocxste");
 
 		this->m_pFrostbiteGui->MenuEndPos(pUnk);
 	}
 
 	void CFeatures::DrawScreen(__int64 pUnk)
 	{
-		FrostbiteFunctions::Drawing::DrawEngineText(pUnk, 10, 10, "by zerrocxste", Color::Red(), 1.5f);
-
 		if (KeyHelper::IsKeyReleased(VK_INSERT))
 			FrostbiteFunctions::Input::SetBlockInput(Vars::pVars->m_MenuVars.m_bMenuOpened = !Vars::pVars->m_MenuVars.m_bMenuOpened);
 
 		if (Vars::pVars->m_MenuVars.m_bMenuOpened)
+		{
+			auto pResolution = FrostbiteFunctions::Drawing::GetGameScreenResolution();
+			char buf[64]{ 0 };
+			sprintf(buf, "Width: %d Height: %d", pResolution[0], pResolution[1]);
+			FrostbiteFunctions::Drawing::DrawEngineText(pUnk, 10, 10, buf, Color::Aqua(), 1.5f);
+
 			DrawMenu(pUnk);
+		}
 	}
 
 	std::unique_ptr<CFeatures> pFeatures = std::make_unique<CFeatures>();

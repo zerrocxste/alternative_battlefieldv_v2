@@ -15,6 +15,8 @@ FrostbiteGui::CFrostbiteGui::CFrostbiteGui() :
 	m_bReturnIsPressed(false),
 	m_bReturnIsDowned(false),
 	m_bReturnIsReleased(false),
+	m_bPressedGoToNextItem(false),
+	m_bPressedGoToPrevItem(false),
 	m_bIsSameLine(false),
 	m_flLastSameLine(0.f),
 	m_flMaxXLine(0.f),
@@ -54,6 +56,9 @@ void FrostbiteGui::CFrostbiteGui::MenuStartPos(const char* pszName, std::uint32_
 
 	this->m_iNewPosX += CalcSpaceOffset(iWindowInnerSpacing);
 	this->m_iNewPosY += CalcSpaceOffset(iWindowInnerSpacing + iTitlebarSizeSizeY);
+
+	this->m_bPressedGoToPrevItem = IsKeyDowned(VK_UP);
+	this->m_bPressedGoToNextItem = IsKeyDowned(VK_DOWN);
 }
 
 void FrostbiteGui::CFrostbiteGui::MenuEndPos(__int64 pUnk)
@@ -64,10 +69,10 @@ void FrostbiteGui::CFrostbiteGui::MenuEndPos(__int64 pUnk)
 	if (!this->m_bMenuNewPosStarted)
 		return;
 
-	if (IsKeyDowned(VK_UP) && *this->m_pMenuCurrentlySelected != 0)
+	if (this->m_bPressedGoToPrevItem && *this->m_pMenuCurrentlySelected != 0)
 		*this->m_pMenuCurrentlySelected -= 1;
 
-	if (IsKeyDowned(VK_DOWN) && *this->m_pMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
+	if (this->m_bPressedGoToNextItem && *this->m_pMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
 		*this->m_pMenuCurrentlySelected += 1;
 
 	if (!this->m_flBGSizeX)
@@ -98,6 +103,8 @@ void FrostbiteGui::CFrostbiteGui::MenuEndPos(__int64 pUnk)
 	this->m_bReturnIsPressed = false;
 	this->m_bReturnIsDowned = false;
 	this->m_bReturnIsReleased = false;
+	this->m_bPressedGoToNextItem = false;
+	this->m_bPressedGoToPrevItem = false;
 	this->m_bIsSameLine = false;
 	this->m_flLastSameLine = 0.f;
 	this->m_flMaxXLine = 0.f;
@@ -105,13 +112,13 @@ void FrostbiteGui::CFrostbiteGui::MenuEndPos(__int64 pUnk)
 	this->m_pszWindowTitle = nullptr;
 }
 
-bool FrostbiteGui::CFrostbiteGui::AddCheckbox(__int64 pUnk, const char* pszTabName, bool* pVarible)
+bool FrostbiteGui::CFrostbiteGui::AddCheckbox(__int64 pUnk, const char* pszText, bool* pVarible)
 {
 	using namespace FrostbiteFunctions::Drawing;
 
 	auto bClicked = false;
 
-	if (!this->m_bMenuNewPosStarted || !pVarible || strlen(pszTabName) > iNameMaxSize)
+	if (!this->m_bMenuNewPosStarted || !pVarible || strlen(pszText) > iNameMaxSize)
 		return bClicked;
 
 	auto bCurrentItemHovered = this->m_iCurrentlyTabItemsSize == *this->m_pMenuCurrentlySelected;
@@ -123,7 +130,7 @@ bool FrostbiteGui::CFrostbiteGui::AddCheckbox(__int64 pUnk, const char* pszTabNa
 
 	memset(this->m_szLastItemLabel, 0, sizeof(this->m_szLastItemLabel));
 	*pVarible ? strcpy(this->m_szLastItemLabel, "[x] ") : strcpy(this->m_szLastItemLabel, "[ ] ");
-	strcpy(this->m_szLastItemLabel + 4, pszTabName);
+	strcpy(this->m_szLastItemLabel + 4, pszText);
 
 	auto color = bCurrentItemClicked ? Color::Blue() : bCurrentItemHovered ? Color::Red() : Color::Green();
 	
@@ -148,6 +155,29 @@ bool FrostbiteGui::CFrostbiteGui::AddCheckbox(__int64 pUnk, const char* pszTabNa
 	}
 
 	return bClicked;
+}
+
+void FrostbiteGui::CFrostbiteGui::AddText(__int64 pUnk, const char* pszText)
+{
+	using namespace FrostbiteFunctions::Drawing;
+
+	if (!this->m_bMenuNewPosStarted)
+		return;
+
+	auto flLine = 0.f;
+	if (this->m_bIsSameLine)
+		flLine = this->m_flLastSameLine;
+
+	memset(this->m_szLastItemLabel, 0, sizeof(this->m_szLastItemLabel));
+	strcpy(this->m_szLastItemLabel, pszText);
+
+	DrawEngineText(pUnk, this->m_iNewPosX + flLine, this->m_iNewPosY + (CalcSpaceOffset(this->m_iItemSpaceSize) * this->m_iCurrentlyItemsCount), this->m_szLastItemLabel, Color::Green(), this->m_flFontSize);
+
+	this->m_iCurrentlyItemsCount++;
+
+	auto flCurrentMaxXLine = CalcSpaceOffset(iWindowInnerSpacing) + flLine + CalcTextLength(this->m_szLastItemLabel) + CalcSpaceOffset(iWindowInnerSpacing);
+	if (this->m_flMaxXLine < flCurrentMaxXLine)
+		this->m_flMaxXLine = flCurrentMaxXLine;
 }
 
 float FrostbiteGui::CFrostbiteGui::CalcTextLength(char* szText)
