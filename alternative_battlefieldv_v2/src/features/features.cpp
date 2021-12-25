@@ -102,18 +102,13 @@ namespace Features
 		}
 	}
 
-	void CFeatures::LockupRadarHackMutex()
+	void CFeatures::DrawEnemyInGameRadar()
 	{
 		this->m_mtxCollectData.lock();
 
 		MainRadarHackWork();
 
 		this->m_mtxCollectData.unlock();
-	}
-
-	void CFeatures::DrawEnemyInGameRadar()
-	{
-		LockupRadarHackMutex();
 	}
 
 	void CFeatures::ClientSoldierEntityListGrabber(DWORD_PTR ClientSoldierEntity)
