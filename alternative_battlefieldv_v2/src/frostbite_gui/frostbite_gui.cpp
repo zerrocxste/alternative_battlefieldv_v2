@@ -1,5 +1,8 @@
 #include "../alternative.h"
 
+using namespace FrostbiteFunctions::Drawing;
+using namespace KeyHelper;
+
 FrostbiteGui::CFrostbiteGui::CFrostbiteGui() :
 	m_bMenuNewPosStarted(false),
 	m_iStartPosX(0),
@@ -30,8 +33,6 @@ FrostbiteGui::CFrostbiteGui::~CFrostbiteGui()
 
 void FrostbiteGui::CFrostbiteGui::NewWindow(const char* pszName, std::uint32_t x, std::uint32_t y, std::uint32_t* iCurrentlyTabHovered, float flFontSize, std::uint32_t iSizeX, std::uint32_t iSizeY)
 {
-	using namespace KeyHelper;
-
 	this->m_bMenuNewPosStarted = true;
 	this->m_iStartPosX = x;
 	this->m_iStartPosY = y;
@@ -57,9 +58,6 @@ void FrostbiteGui::CFrostbiteGui::NewWindow(const char* pszName, std::uint32_t x
 
 void FrostbiteGui::CFrostbiteGui::EndWindow(__int64 pUnk)
 {
-	using namespace KeyHelper;
-	using namespace FrostbiteFunctions::Drawing;
-
 	if (!this->m_bMenuNewPosStarted)
 		return;
 
@@ -106,8 +104,6 @@ void FrostbiteGui::CFrostbiteGui::EndWindow(__int64 pUnk)
 
 bool FrostbiteGui::CFrostbiteGui::AddCheckbox(__int64 pUnk, const char* pszText, bool* pVarible)
 {
-	using namespace FrostbiteFunctions::Drawing;
-
 	auto bClicked = false;
 
 	if (!this->m_bMenuNewPosStarted || !pVarible || strlen(pszText) > iNameMaxSize)
@@ -151,8 +147,6 @@ bool FrostbiteGui::CFrostbiteGui::AddCheckbox(__int64 pUnk, const char* pszText,
 
 void FrostbiteGui::CFrostbiteGui::AddText(__int64 pUnk, const char* pszText)
 {
-	using namespace FrostbiteFunctions::Drawing;
-
 	if (!this->m_bMenuNewPosStarted)
 		return;
 
