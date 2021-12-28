@@ -4,7 +4,7 @@ namespace Console
 
 	static void Attach(const char* pszTitle)
 	{
-		if (!AllocConsole())
+		if (bIsConsoleInitialized || !AllocConsole())
 			return;
 
 		SetConsoleTitle(pszTitle);
@@ -14,11 +14,8 @@ namespace Console
 		bIsConsoleInitialized = true;
 	}
 
-	static void PrintLogTime(bool bNeedAttachConsole, const char* pszFunctionName, const char* pszText, ...)
+	static void PrintLogTime(const char* pszFunctionName, const char* pszText, ...)
 	{
-		if (bNeedAttachConsole && !bIsConsoleInitialized)
-			Attach("");
-
 		if (!bIsConsoleInitialized)
 			return;
 

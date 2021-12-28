@@ -13,7 +13,6 @@ namespace HookManager
 		bool Hook_sub140970280();
 		bool Hook_sub14958F0D0();
 		bool Hook_sub1405C10A0();
-		bool Hook_sub14927c100();
 	public:
 		CHookManager();
 		~CHookManager();

@@ -71,6 +71,6 @@ int* FrostbiteFunctions::Drawing::GetGameScreenResolution()
 		return iResolution;
 
 	(*(void(__fastcall*)(__int64, int*))Address)(0, iResolution);
-	
+
 	return iResolution;
 }

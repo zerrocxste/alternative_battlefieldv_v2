@@ -15,8 +15,8 @@ namespace FrostbiteGui
 		CFrostbiteGui();
 		~CFrostbiteGui();
 
-		void MenuStartPos(const char* pszName, std::uint32_t x, std::uint32_t y, std::uint32_t* iCurrentlyTabHovered, float flFontSize, std::uint32_t iSizeX = 0, std::uint32_t iSizeY = 0);
-		void MenuEndPos(__int64 pUnk);
+		void NewWindow(const char* pszName, std::uint32_t x, std::uint32_t y, std::uint32_t* iCurrentlyTabHovered, float flFontSize, std::uint32_t iSizeX = 0, std::uint32_t iSizeY = 0);
+		void EndWindow(__int64 pUnk);
 		bool AddCheckbox(__int64 pUnk, const char* pszText, bool* pVarible);
 		void AddText(__int64 pUnk, const char* pszText);
 
@@ -39,8 +39,6 @@ namespace FrostbiteGui
 		std::uint32_t* m_pMenuCurrentlySelected;
 		float m_flFontSize;
 		bool m_bReturnIsPressed, m_bReturnIsDowned, m_bReturnIsReleased;
-		bool m_bPressedGoToNextItem, m_bPressedGoToPrevItem;
-		bool m_bIsHoveredUnclickable;
 		bool m_bIsSameLine;
 		int m_flLastSameLine;
 		float m_flMaxXLine;

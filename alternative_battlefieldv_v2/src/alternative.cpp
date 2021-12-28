@@ -19,11 +19,12 @@ void MainHackThread(void* arg)
 	Console::Attach("alternative | battlefield v");
 #endif
 
-	Console::PrintLogTime(false, __FUNCTION__, "Attach success");
+	Console::PrintLogTime(__FUNCTION__, "Attach success");
 
 	if (!HookManager::pHookManager->DoInitialize())
 	{
-		Console::PrintLogTime(true, __FUNCTION__, "Failed installation hooks!, Exit...\n");
+		Console::Attach("Error");
+		Console::PrintLogTime(__FUNCTION__, "Failed installation hooks!, Exit...\n");
 		goto failed_jmp;
 	}
 
@@ -35,11 +36,12 @@ void MainHackThread(void* arg)
 
 	if (!HookManager::pHookManager->UnhookAll())
 	{
-		Console::PrintLogTime(true, __FUNCTION__, "Unhook failed!\n");
+		Console::Attach("Error");
+		Console::PrintLogTime(__FUNCTION__, "Unhook failed!\n");
 		return;
 	}
 
-	Console::PrintLogTime(false, __FUNCTION__, "Exit...\n");
+	Console::PrintLogTime(__FUNCTION__, "Exit...\n");
 	failed_jmp:
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	FreeLibraryAndExitThread((HMODULE)arg, EXIT_SUCCESS);

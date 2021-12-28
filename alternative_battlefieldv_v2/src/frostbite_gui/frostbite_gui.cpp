@@ -15,8 +15,6 @@ FrostbiteGui::CFrostbiteGui::CFrostbiteGui() :
 	m_bReturnIsPressed(false),
 	m_bReturnIsDowned(false),
 	m_bReturnIsReleased(false),
-	m_bPressedGoToNextItem(false),
-	m_bPressedGoToPrevItem(false),
 	m_bIsSameLine(false),
 	m_flLastSameLine(0.f),
 	m_flMaxXLine(0.f),
@@ -30,7 +28,7 @@ FrostbiteGui::CFrostbiteGui::~CFrostbiteGui()
 
 }
 
-void FrostbiteGui::CFrostbiteGui::MenuStartPos(const char* pszName, std::uint32_t x, std::uint32_t y, std::uint32_t* iCurrentlyTabHovered, float flFontSize, std::uint32_t iSizeX, std::uint32_t iSizeY)
+void FrostbiteGui::CFrostbiteGui::NewWindow(const char* pszName, std::uint32_t x, std::uint32_t y, std::uint32_t* iCurrentlyTabHovered, float flFontSize, std::uint32_t iSizeX, std::uint32_t iSizeY)
 {
 	using namespace KeyHelper;
 
@@ -53,15 +51,11 @@ void FrostbiteGui::CFrostbiteGui::MenuStartPos(const char* pszName, std::uint32_
 	this->m_flMaxXLine = 0.f;
 	memset(this->m_szLastItemLabel, 0, sizeof(this->m_szLastItemLabel));
 	this->m_pszWindowTitle = (char*)pszName;
-
 	this->m_iNewPosX += CalcSpaceOffset(iWindowInnerSpacing);
 	this->m_iNewPosY += CalcSpaceOffset(iWindowInnerSpacing + iTitlebarSizeSizeY);
-
-	this->m_bPressedGoToPrevItem = IsKeyDowned(VK_UP);
-	this->m_bPressedGoToNextItem = IsKeyDowned(VK_DOWN);
 }
 
-void FrostbiteGui::CFrostbiteGui::MenuEndPos(__int64 pUnk)
+void FrostbiteGui::CFrostbiteGui::EndWindow(__int64 pUnk)
 {
 	using namespace KeyHelper;
 	using namespace FrostbiteFunctions::Drawing;
@@ -69,10 +63,10 @@ void FrostbiteGui::CFrostbiteGui::MenuEndPos(__int64 pUnk)
 	if (!this->m_bMenuNewPosStarted)
 		return;
 
-	if (this->m_bPressedGoToPrevItem && *this->m_pMenuCurrentlySelected != 0)
+	if (IsKeyDowned(VK_UP) && *this->m_pMenuCurrentlySelected != 0)
 		*this->m_pMenuCurrentlySelected -= 1;
 
-	if (this->m_bPressedGoToNextItem && *this->m_pMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
+	if (IsKeyDowned(VK_DOWN) && *this->m_pMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
 		*this->m_pMenuCurrentlySelected += 1;
 
 	if (!this->m_flBGSizeX)
@@ -103,8 +97,6 @@ void FrostbiteGui::CFrostbiteGui::MenuEndPos(__int64 pUnk)
 	this->m_bReturnIsPressed = false;
 	this->m_bReturnIsDowned = false;
 	this->m_bReturnIsReleased = false;
-	this->m_bPressedGoToNextItem = false;
-	this->m_bPressedGoToPrevItem = false;
 	this->m_bIsSameLine = false;
 	this->m_flLastSameLine = 0.f;
 	this->m_flMaxXLine = 0.f;
@@ -185,9 +177,9 @@ float FrostbiteGui::CFrostbiteGui::CalcTextLength(char* szText)
 	return strlen(szText) * CalcSpaceOffset(7);
 }
 
-float FrostbiteGui::CFrostbiteGui::CalcSpaceOffset(int iOfs)
+float FrostbiteGui::CFrostbiteGui::CalcSpaceOffset(int iVal)
 {
-	return iOfs * this->m_flFontSize;
+	return iVal * this->m_flFontSize;
 }
 
 void FrostbiteGui::CFrostbiteGui::SameLine() 

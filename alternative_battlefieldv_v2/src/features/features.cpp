@@ -11,8 +11,6 @@ namespace Features
 
 	CFeatures::~CFeatures()
 	{
-		this->m_vClientSoldierEntityList.clear();
-
 		PatchDrawNameTagsAlwaysVisible(false);
 		PatchNameTagDrawExtendedInfo(false);
 		NoRecoil(false);
@@ -137,7 +135,7 @@ namespace Features
 
 		if (!PatchAddressVisibleCheck || !PatchAddressWriteVaribles || !PatchAddressSmokeCheck)
 		{
-			Console::PrintLogTime(false, __FUNCTION__, "Sig not found");
+			Console::PrintLogTime(__FUNCTION__, "Sig not found");
 			return;
 		}
 
@@ -165,7 +163,7 @@ namespace Features
 
 		if (!PatchAddress)
 		{
-			Console::PrintLogTime(false, __FUNCTION__, "Sig not found");
+			Console::PrintLogTime(__FUNCTION__, "Sig not found");
 			return;
 		}
 
@@ -186,7 +184,7 @@ namespace Features
 
 		if (!WeaponRecoilPitchWriterInstruction || !WeaponRecoilYawWriterInstruction)
 		{
-			Console::PrintLogTime(false, __FUNCTION__, "Sig not found");
+			Console::PrintLogTime(__FUNCTION__, "Sig not found");
 			return;
 		}
 
@@ -247,7 +245,7 @@ namespace Features
 
 		static std::uint32_t iCurrenlyItemHovered = 0;
 
-		this->m_pFrostbiteGui->MenuStartPos("alternative hack", 20, 50, &iCurrenlyItemHovered, 2.f);
+		this->m_pFrostbiteGui->NewWindow("alternative hack", 20, 50, &iCurrenlyItemHovered, 2.f);
 
 		this->m_pFrostbiteGui->AddCheckbox(pUnk, "In game radar", &pVars->m_HackVars.m_bRadarActive);
 
@@ -269,7 +267,7 @@ namespace Features
 		this->m_pFrostbiteGui->AddText(pUnk, "");
 		this->m_pFrostbiteGui->AddText(pUnk, "by zerrocxste");
 
-		this->m_pFrostbiteGui->MenuEndPos(pUnk);
+		this->m_pFrostbiteGui->EndWindow(pUnk);
 	}
 
 	void CFeatures::DrawScreen(__int64 pUnk)
