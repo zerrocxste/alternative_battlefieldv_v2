@@ -24,7 +24,7 @@ void MainHackThread(void* arg)
 	if (!HookManager::pHookManager->DoInitialize())
 	{
 		Console::Attach("Error");
-		Console::PrintLogTime(__FUNCTION__, "Failed installation hooks!, Exit...\n");
+		Console::PrintLogTime(__FUNCTION__, "Failed installation hooks!\n");
 		goto failed_jmp;
 	}
 
@@ -41,10 +41,10 @@ void MainHackThread(void* arg)
 		return;
 	}
 
+failed_jmp:
 	Console::PrintLogTime(__FUNCTION__, "Exit...\n");
-	failed_jmp:
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	FreeLibraryAndExitThread((HMODULE)arg, EXIT_SUCCESS);
+	FreeLibraryAndExitThread(Vars::pVars->m_CoreVars.hThisModule, EXIT_SUCCESS);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,

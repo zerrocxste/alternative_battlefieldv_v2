@@ -5,13 +5,10 @@ namespace Features
 	private:
 		DWORD_PTR m_pLocalClientSoldierEntity;
 		std::vector<DWORD_PTR> m_vClientSoldierEntityList;
-
 		std::mutex m_mtxCollectData;
-
 		std::unique_ptr<FrostbiteGui::CFrostbiteGui> m_pFrostbiteGui;
 
 		void MainRadarHackWork();
-
 		void DrawMenu(__int64 pUnk);
 	public:
 		CFeatures();

@@ -2,6 +2,15 @@
 
 namespace Features
 {
+	static auto PatchAddressVisibleCheck = (memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x45\x38\x00\x00\x00\x00\x00\x74\x00\x4D\x85", "xx?????x?xx") + 0x7);
+	static auto PatchAddressWriteVaribles = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x44\x88\x00\x00\x88\x5F", "xx??xx");
+	static auto PatchAddressSmokeCheck = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x75\x00\x48\x8B\x00\x00\x00\x00\x00\x4C\x8B\x00\x00\x00\x00\x00\x48\x8D", "x?xx?????xx?????xx");
+	static auto PatchAddressExtendedNametag = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x75\x00\x49\x8B\x00\x00\x48\x81\xC6\x00\x00\x00\x00\x48\x89", "x?xx??xxx????xx");
+	static auto PatchAddressScopeReloading = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x74\x00\x45\x89\x00\x00\x00\x00\x00\x44\x38", "x?xx?????xx");
+	static auto PatchAddressWeaponPitch = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\xF3\x0F\x00\x00\x00\xF3\x41\x00\x00\x00\x00\x41\x0F\x00\x00\x76", "xx???xx????xx??x");
+	static auto PatchAddressWeaponYaw = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x41\x00\x00\x00\x00\x41\x0F\x00\x00\x76", "xx???xx???xx????xx??x");
+	static auto PatchAddressFirerate = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\xF3\x0F\x00\x00\x00\x00\x00\x00\xE9\x00\x00\x00\x00\x85\xD2", "xx??????x????xx");
+
 	CFeatures::CFeatures() : 
 		m_pLocalClientSoldierEntity(0), 
 		m_pFrostbiteGui(std::make_unique<FrostbiteGui::CFrostbiteGui>())
@@ -129,10 +138,6 @@ namespace Features
 
 	void CFeatures::PatchDrawNameTagsAlwaysVisible(bool bIsEnable)
 	{
-		static auto PatchAddressVisibleCheck = (memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x45\x38\x00\x00\x00\x00\x00\x74\x00\x4D\x85", "xx?????x?xx") + 0x7);
-		static auto PatchAddressWriteVaribles = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x44\x88\x00\x00\x88\x5F", "xx??xx");
-		static auto PatchAddressSmokeCheck = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x75\x00\x48\x8B\x00\x00\x00\x00\x00\x4C\x8B\x00\x00\x00\x00\x00\x48\x8D", "x?xx?????xx?????xx");
-
 		if (!PatchAddressVisibleCheck || !PatchAddressWriteVaribles || !PatchAddressSmokeCheck)
 		{
 			Console::PrintLogTime(__FUNCTION__, "Sig not found");
@@ -159,9 +164,7 @@ namespace Features
 
 	void CFeatures::PatchNameTagDrawExtendedInfo(bool bIsEnable)
 	{
-		static auto PatchAddress = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x75\x00\x49\x8B\x00\x00\x48\x81\xC6\x00\x00\x00\x00\x48\x89", "x?xx??xxx????xx");
-
-		if (!PatchAddress)
+		if (!PatchAddressExtendedNametag)
 		{
 			Console::PrintLogTime(__FUNCTION__, "Sig not found");
 			return;
@@ -169,20 +172,17 @@ namespace Features
 
 		if (bIsEnable)
 		{
-			memory_utils::patch_instruction(PatchAddress, "\x74", 1);
+			memory_utils::patch_instruction(PatchAddressExtendedNametag, "\x74", 1);
 		}
 		else
 		{
-			memory_utils::patch_instruction(PatchAddress, "\x75", 1);
+			memory_utils::patch_instruction(PatchAddressExtendedNametag, "\x75", 1);
 		}
 	}
 
 	void CFeatures::NoRecoil(bool bIsEnable)
 	{
-		static auto WeaponRecoilPitchWriterInstruction = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\xF3\x0F\x00\x00\x00\xF3\x41\x00\x00\x00\x00\x41\x0F\x00\x00\x76", "xx???xx????xx??x");
-		static auto WeaponRecoilYawWriterInstruction = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x41\x00\x00\x00\x00\x41\x0F\x00\x00\x76", "xx???xx???xx????xx??x");
-
-		if (!WeaponRecoilPitchWriterInstruction || !WeaponRecoilYawWriterInstruction)
+		if (!PatchAddressWeaponPitch || !PatchAddressWeaponYaw)
 		{
 			Console::PrintLogTime(__FUNCTION__, "Sig not found");
 			return;
@@ -190,52 +190,48 @@ namespace Features
 
 		if (bIsEnable)
 		{
-			memory_utils::fill_memory_region(WeaponRecoilPitchWriterInstruction, 0x90, 5);
-			memory_utils::fill_memory_region(WeaponRecoilYawWriterInstruction, 0x90, 5);
+			memory_utils::fill_memory_region(PatchAddressWeaponPitch, 0x90, 5);
+			memory_utils::fill_memory_region(PatchAddressWeaponYaw, 0x90, 5);
 		}
 		else
 		{
 			static BYTE bOriginalRecoilPitchInstruction[5] = { 0xf3, 0x0f, 0x11, 0x47, 0x7c };
 			static BYTE bOriginalRecoilYawInstruction[5] = { 0xf3, 0x0f, 0x11, 0x77, 0x78 };
-			memory_utils::patch_instruction(WeaponRecoilPitchWriterInstruction, (const char*)&bOriginalRecoilPitchInstruction, 5);
-			memory_utils::patch_instruction(WeaponRecoilYawWriterInstruction, (const char*)&bOriginalRecoilYawInstruction, 5);
+			memory_utils::patch_instruction(PatchAddressWeaponPitch, (const char*)&bOriginalRecoilPitchInstruction, 5);
+			memory_utils::patch_instruction(PatchAddressWeaponYaw, (const char*)&bOriginalRecoilYawInstruction, 5);
 		}
 	}
 
 	void CFeatures::IncreaseFireRate(bool bIsEnable, float flRate)
 	{
-		static auto WeaponFirerateWriterInstruction = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\xF3\x0F\x00\x00\x00\x00\x00\x00\xE9\x00\x00\x00\x00\x85\xD2", "xx??????x????xx");
-
-		if (!WeaponFirerateWriterInstruction)
+		if (!PatchAddressFirerate)
 			return;
 
 		if (bIsEnable)
 		{
 			static BYTE bFastfireratePatch[14] = { 0xc7, 0x87, 0xd4, 0x01, 0x00, 0x00, 0x0a, 0xd7, 0xa3, 0x3c, 0x90, 0x90, 0x90, 0x90 };
 			memcpy(bFastfireratePatch + 0x6, &flRate, 4);
-			memory_utils::patch_instruction(WeaponFirerateWriterInstruction - 0x6, (const char*)&bFastfireratePatch, 14);
+			memory_utils::patch_instruction(PatchAddressFirerate - 0x6, (const char*)&bFastfireratePatch, 14);
 		}
 		else
 		{
 			static BYTE bOriginalFirerateInstruction[14] = { 0x89, 0x87, 0x60, 0x01, 0x00, 0x00, 0xf3, 0x0f, 0x11, 0x87, 0xd4, 0x01, 0x00, 0x00 };
-			memory_utils::patch_instruction(WeaponFirerateWriterInstruction - 0x6, (const char*)&bOriginalFirerateInstruction, 14);
+			memory_utils::patch_instruction(PatchAddressFirerate - 0x6, (const char*)&bOriginalFirerateInstruction, 14);
 		}
 	}
 
 	void CFeatures::PatchInScopeReloading(bool bIsEnable)
 	{
-		static auto PatchAddress = memory_utils::pattern_scanner_module(memory_utils::get_base(), "\x74\x00\x45\x89\x00\x00\x00\x00\x00\x44\x38", "x?xx?????xx");
-
-		if (!PatchAddress)
+		if (!PatchAddressScopeReloading)
 			return;
 
 		if (bIsEnable)
 		{
-			memory_utils::patch_instruction(PatchAddress, "\xEB", 1);
+			memory_utils::patch_instruction(PatchAddressScopeReloading, "\xEB", 1);
 		}
 		else
 		{
-			memory_utils::patch_instruction(PatchAddress, "\x74", 1);
+			memory_utils::patch_instruction(PatchAddressScopeReloading, "\x74", 1);
 		}
 	}
 
