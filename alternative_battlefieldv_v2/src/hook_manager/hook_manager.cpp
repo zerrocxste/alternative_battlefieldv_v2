@@ -27,9 +27,8 @@ sub14958F0D0 pfsub14958F0D0 = nullptr;
 
 void __fastcall sub14958F0D0_hooked(__int64 param_1, __int64 param_2, int param_3, __int64 param_4, byte param_5)
 {
-	auto bFireSoundIndexIsLocal = param_5 == 48 /*soldier*/ || param_5 == 80 /*not soldier*/; //sound spam fix
-
-	if (Vars::pVars->m_HackVars.m_bIncreaseFireRate && bFireSoundIndexIsLocal)
+	if (Vars::pVars->m_HackVars.m_bIncreaseFireRate &&
+		param_5 == 48 /*soldier*/ || param_5 == 80 /*not soldier*/)
 	{
 		static int iSkippedSound = 0;
 		static __int64 LastArg1 = 0;

@@ -245,7 +245,7 @@ namespace Features
 
 		static std::uint32_t iCurrenlyItemHovered = 0;
 
-		this->m_pFrostbiteGui->NewWindow("alternative hack", 20, 50, &iCurrenlyItemHovered, 2.f);
+		this->m_pFrostbiteGui->NewWindow("alternative hack | by zerroxste", 20, 50, &iCurrenlyItemHovered, 2.f);
 
 		this->m_pFrostbiteGui->AddCheckbox(pUnk, "In game radar", &pVars->m_HackVars.m_bRadarActive);
 
@@ -258,14 +258,13 @@ namespace Features
 		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Norecoil (Low ban risk)", &pVars->m_HackVars.m_bNoRecoil))
 			NoRecoil(pVars->m_HackVars.m_bNoRecoil);
 
-		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "High firerate (Same, high ban risk with Norecoil!)", &pVars->m_HackVars.m_bIncreaseFireRate))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "High firerate (Low ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
 			IncreaseFireRate(pVars->m_HackVars.m_bIncreaseFireRate);
+
+		this->m_pFrostbiteGui->AddText(pUnk, "High ban risk when use Norecoil and High firerate at same time!");
 
 		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Reload in scope", &pVars->m_HackVars.m_bReloadInScope))
 			PatchInScopeReloading(pVars->m_HackVars.m_bReloadInScope);
-
-		this->m_pFrostbiteGui->AddText(pUnk, "");
-		this->m_pFrostbiteGui->AddText(pUnk, "by zerrocxste");
 
 		this->m_pFrostbiteGui->EndWindow(pUnk);
 	}

@@ -22,15 +22,15 @@ public:
 
 	Color& MakeRand();
 
-	static Color Red();
-	static Color Green();
-	static Color Blue();
-	static Color Yellow();
-	static Color Magenta();
-	static Color Aqua();
-	static Color Grey();
-	static Color White();
-	static Color Black();
+	static const Color Red();
+	static const Color Green();
+	static const Color Blue();
+	static const Color Yellow();
+	static const Color Magenta();
+	static const Color Aqua();
+	static const Color Grey();
+	static const Color White();
+	static const Color Black();
 private:
 	std::uint8_t r, g, b, a;
 };

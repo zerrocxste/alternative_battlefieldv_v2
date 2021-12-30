@@ -55,14 +55,14 @@ namespace memory_utils
 		return true;
 	}
 
-	DWORD_PTR get_module_size(DWORD_PTR address)
+	DWORD get_module_size(DWORD_PTR address)
 	{
-		return PIMAGE_NT_HEADERS(address + (DWORD_PTR)PIMAGE_DOS_HEADER(address)->e_lfanew)->OptionalHeader.SizeOfImage;
+		return PIMAGE_NT_HEADERS(address + PIMAGE_DOS_HEADER(address)->e_lfanew)->OptionalHeader.SizeOfImage;
 	}
 
-	DWORD_PTR compare_mem(const char* pattern, const char* mask, DWORD_PTR base, DWORD_PTR size, const int patternLength, DWORD speed)
+	DWORD_PTR compare_mem(const char* pattern, const char* mask, DWORD_PTR base, DWORD size, const int patternLength, DWORD speed)
 	{
-		for (DWORD_PTR i = 0; i < size - patternLength; i += speed)
+		for (DWORD i = 0; i < size - patternLength; i += speed)
 		{
 			bool found = true;
 			for (int j = 0; j < patternLength; j++)
@@ -88,8 +88,8 @@ namespace memory_utils
 
 	DWORD_PTR pattern_scanner_module(HMODULE module, const char* pattern, const char* mask, DWORD scan_speed)
 	{
-		DWORD_PTR base = (DWORD_PTR)module;
-		DWORD_PTR size = get_module_size(base);
+		auto base = (DWORD_PTR)module;
+		auto size = get_module_size(base);
 
 		int patternLength = (int)strlen(mask);
 

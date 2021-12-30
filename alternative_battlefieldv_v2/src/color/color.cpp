@@ -49,47 +49,47 @@ Color& Color::MakeRand()
 	return *this;
 }
 
-Color Color::Red()
+const Color Color::Red()
 {
 	return Color(255, 0, 0);
 }
 
-Color Color::Green()
+const Color Color::Green()
 {
 	return Color(0, 255, 0);
 }
 
-Color Color::Blue()
+const Color Color::Blue()
 {
 	return Color(0, 0, 255);
 }
 
-Color Color::Yellow()
+const Color Color::Yellow()
 {
 	return Color(255, 255, 0);
 }
 
-Color Color::Magenta()
+const Color Color::Magenta()
 {
 	return Color(255, 0, 255);
 }
 
-Color Color::Aqua()
+const Color Color::Aqua()
 {
 	return Color(0, 255, 255);
 }
 
-Color Color::Grey()
+const Color Color::Grey()
 {
 	return Color(128, 128, 128);
 }
 
-Color Color::White()
+const Color Color::White()
 {
 	return Color(255, 255, 255);
 }
 
-Color Color::Black()
+const Color Color::Black()
 {
 	return Color(0, 0, 0);
 }

@@ -15,7 +15,7 @@ namespace memory_utils
 
 	extern DWORD_PTR get_base_address();
 
-	extern DWORD_PTR get_module_size(DWORD_PTR address);
+	extern DWORD get_module_size(DWORD_PTR address);
 
 	extern DWORD_PTR pattern_scanner_module(HMODULE module, const char* pattern, const char* mask, DWORD scan_speed = 0x1);
 
