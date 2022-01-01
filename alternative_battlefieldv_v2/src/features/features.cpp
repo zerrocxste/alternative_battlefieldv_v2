@@ -251,10 +251,10 @@ namespace Features
 		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Nametag extended info", &pVars->m_HackVars.m_bNameTagDrawExtendedInfo))
 			PatchNameTagDrawExtendedInfo(pVars->m_HackVars.m_bNameTagDrawExtendedInfo);
 
-		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Norecoil (Low ban risk)", &pVars->m_HackVars.m_bNoRecoil))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "Norecoil (Ban risk)", &pVars->m_HackVars.m_bNoRecoil))
 			NoRecoil(pVars->m_HackVars.m_bNoRecoil);
 
-		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "High firerate (Low ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
+		if (this->m_pFrostbiteGui->AddCheckbox(pUnk, "High firerate (Ban risk)", &pVars->m_HackVars.m_bIncreaseFireRate))
 			IncreaseFireRate(pVars->m_HackVars.m_bIncreaseFireRate);
 
 		this->m_pFrostbiteGui->AddText(pUnk, "High ban risk when use Norecoil and High firerate at same time!");
