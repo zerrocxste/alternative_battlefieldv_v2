@@ -1,12 +1,5 @@
 namespace FrostbiteGui
 {
-	enum ITEMS
-	{
-		CHECKBOX,
-		//...
-		ITEMS_MAX_SIZE
-	};
-
 	constexpr auto iNameMaxSize = 128;
 
 	class CFrostbiteGui
@@ -23,7 +16,7 @@ namespace FrostbiteGui
 		void SameLine();
 	private:
 		int iWindowInnerSpacing = 7;
-		int iTitlebarSizeSizeY = 18;
+		int iTitlebarSizeHeight = 18;
 
 		float CalcTextLength(char* szText);
 		float CalcSpaceOffset(int iOfs);
@@ -32,7 +25,7 @@ namespace FrostbiteGui
 
 		bool m_bMenuNewPosStarted;
 		std::uint32_t m_iStartPosX, m_iStartPosY;
-		float m_flBGSizeX, m_flBGSizeY;
+		float m_flBGWidth, m_flBGHeight;
 		std::uint32_t m_iNewPosX, m_iNewPosY;
 		std::uint32_t m_iCurrentlyTabItemsSize;
 		std::uint32_t m_iCurrentlyItemsCount;
@@ -41,7 +34,7 @@ namespace FrostbiteGui
 		bool m_bReturnIsPressed, m_bReturnIsDowned, m_bReturnIsReleased;
 		bool m_bIsSameLine;
 		int m_flLastSameLine;
-		float m_flMaxXLine;
+		float m_flMaxWindowWidth;
 		char m_szLastItemLabel[3 + 1 + iNameMaxSize];
 		char* m_pszWindowTitle;
 	};

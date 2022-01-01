@@ -7,8 +7,8 @@ FrostbiteGui::CFrostbiteGui::CFrostbiteGui() :
 	m_bMenuNewPosStarted(false),
 	m_iStartPosX(0),
 	m_iStartPosY(0),
-	m_flBGSizeX(0.f),
-	m_flBGSizeY(0.f),
+	m_flBGWidth(0.f),
+	m_flBGHeight(0.f),
 	m_iNewPosX(0),
 	m_iNewPosY(0),
 	m_iCurrentlyTabItemsSize(0),
@@ -20,7 +20,7 @@ FrostbiteGui::CFrostbiteGui::CFrostbiteGui() :
 	m_bReturnIsReleased(false),
 	m_bIsSameLine(false),
 	m_flLastSameLine(0.f),
-	m_flMaxXLine(0.f),
+	m_flMaxWindowWidth(0.f),
 	m_pszWindowTitle(nullptr)
 {
 	memset(this->m_szLastItemLabel, 0, sizeof(this->m_szLastItemLabel));
@@ -36,8 +36,8 @@ void FrostbiteGui::CFrostbiteGui::NewWindow(const char* pszName, std::uint32_t x
 	this->m_bMenuNewPosStarted = true;
 	this->m_iStartPosX = x;
 	this->m_iStartPosY = y;
-	this->m_flBGSizeX = iSizeX;
-	this->m_flBGSizeY = iSizeY;
+	this->m_flBGWidth = iSizeX;
+	this->m_flBGHeight = iSizeY;
 	this->m_iNewPosX = this->m_iStartPosX;
 	this->m_iNewPosY = this->m_iStartPosY;
 	this->m_iCurrentlyTabItemsSize = 0;
@@ -49,11 +49,11 @@ void FrostbiteGui::CFrostbiteGui::NewWindow(const char* pszName, std::uint32_t x
 	this->m_bReturnIsReleased = IsKeyReleased(VK_RETURN);
 	this->m_bIsSameLine = false;
 	this->m_flLastSameLine = 0.f;
-	this->m_flMaxXLine = 0.f;
+	this->m_flMaxWindowWidth = 0.f;
 	memset(this->m_szLastItemLabel, 0, sizeof(this->m_szLastItemLabel));
 	this->m_pszWindowTitle = (char*)pszName;
 	this->m_iNewPosX += CalcSpaceOffset(iWindowInnerSpacing);
-	this->m_iNewPosY += CalcSpaceOffset(iWindowInnerSpacing + iTitlebarSizeSizeY);
+	this->m_iNewPosY += CalcSpaceOffset(iWindowInnerSpacing + iTitlebarSizeHeight);
 }
 
 void FrostbiteGui::CFrostbiteGui::EndWindow(__int64 pUnk)
@@ -67,26 +67,26 @@ void FrostbiteGui::CFrostbiteGui::EndWindow(__int64 pUnk)
 	if (IsKeyDowned(VK_DOWN) && *this->m_pMenuCurrentlySelected < this->m_iCurrentlyTabItemsSize - 1)
 		*this->m_pMenuCurrentlySelected += 1;
 
-	if (!this->m_flBGSizeX)
-		this->m_flBGSizeX = this->m_flMaxXLine;
+	if (!this->m_flBGWidth)
+		this->m_flBGWidth = this->m_flMaxWindowWidth;
 
-	if (!this->m_flBGSizeY)
-		this->m_flBGSizeY = CalcSpaceOffset(iTitlebarSizeSizeY + iWindowInnerSpacing) + CalcSpaceOffset(this->m_iItemSpaceSize * this->m_iCurrentlyItemsCount) + CalcSpaceOffset(iWindowInnerSpacing);
+	if (!this->m_flBGHeight)
+		this->m_flBGHeight = CalcSpaceOffset(iTitlebarSizeHeight + iWindowInnerSpacing) + CalcSpaceOffset(this->m_iItemSpaceSize * this->m_iCurrentlyItemsCount) + CalcSpaceOffset(iWindowInnerSpacing);
 		
 	DrawEngineFilledRect(pUnk, this->m_iStartPosX, this->m_iStartPosY, 
-		this->m_iStartPosX + this->m_flBGSizeX, this->m_iStartPosY + this->m_flBGSizeY, 
+		this->m_iStartPosX + this->m_flBGWidth, this->m_iStartPosY + this->m_flBGHeight,
 		Color::Grey());
 
 	DrawEngineFilledRect(pUnk,
 		this->m_iStartPosX, this->m_iStartPosY,
-		this->m_iStartPosX + this->m_flBGSizeX, this->m_iStartPosY + CalcSpaceOffset(18),
+		this->m_iStartPosX + this->m_flBGWidth, this->m_iStartPosY + CalcSpaceOffset(18),
 		Color::White());
 
 	DrawEngineText(pUnk, this->m_iStartPosX + CalcSpaceOffset(3), this->m_iStartPosY + CalcSpaceOffset(3), this->m_pszWindowTitle, Color::Black(), this->m_flFontSize);
 
 	this->m_bMenuNewPosStarted = false;
 	this->m_iStartPosX = this->m_iStartPosY = 0;
-	this->m_flBGSizeX = this->m_flBGSizeY = 0.f;
+	this->m_flBGWidth = this->m_flBGHeight = 0.f;
 	this->m_iNewPosX = this->m_iNewPosY = 0;
 	this->m_iCurrentlyTabItemsSize = 0;
 	this->m_iCurrentlyItemsCount = 0;
@@ -97,7 +97,7 @@ void FrostbiteGui::CFrostbiteGui::EndWindow(__int64 pUnk)
 	this->m_bReturnIsReleased = false;
 	this->m_bIsSameLine = false;
 	this->m_flLastSameLine = 0.f;
-	this->m_flMaxXLine = 0.f;
+	this->m_flMaxWindowWidth = 0.f;
 	memset(this->m_szLastItemLabel, 0, sizeof(this->m_szLastItemLabel));
 	this->m_pszWindowTitle = nullptr;
 }
@@ -132,8 +132,8 @@ bool FrostbiteGui::CFrostbiteGui::AddCheckbox(__int64 pUnk, const char* pszText,
 	this->m_bIsSameLine = false;
 
 	auto flCurrentMaxXLine = CalcSpaceOffset(iWindowInnerSpacing) + flLine + CalcTextLength(this->m_szLastItemLabel) + CalcSpaceOffset(iWindowInnerSpacing);
-	if (this->m_flMaxXLine < flCurrentMaxXLine)
-		this->m_flMaxXLine = flCurrentMaxXLine;
+	if (this->m_flMaxWindowWidth < flCurrentMaxXLine)
+		this->m_flMaxWindowWidth = flCurrentMaxXLine;
 
 	if (bCurrentItemHovered && 
 		this->m_bReturnIsReleased)
@@ -162,8 +162,8 @@ void FrostbiteGui::CFrostbiteGui::AddText(__int64 pUnk, const char* pszText)
 	this->m_iCurrentlyItemsCount++;
 
 	auto flCurrentMaxXLine = CalcSpaceOffset(iWindowInnerSpacing) + flLine + CalcTextLength(this->m_szLastItemLabel) + CalcSpaceOffset(iWindowInnerSpacing);
-	if (this->m_flMaxXLine < flCurrentMaxXLine)
-		this->m_flMaxXLine = flCurrentMaxXLine;
+	if (this->m_flMaxWindowWidth < flCurrentMaxXLine)
+		this->m_flMaxWindowWidth = flCurrentMaxXLine;
 }
 
 float FrostbiteGui::CFrostbiteGui::CalcTextLength(char* szText)
