@@ -15,11 +15,13 @@ namespace Features
 		m_pLocalClientSoldierEntity(0), 
 		m_pFrostbiteGui(std::make_unique<FrostbiteGui::CFrostbiteGui>())
 	{
-
+		InitializeCriticalSection(&this->m_csCollectData);
 	}
 
 	CFeatures::~CFeatures()
 	{
+		DeleteCriticalSection(&this->m_csCollectData);
+
 		PatchDrawNameTagsAlwaysVisible(false);
 		PatchNameTagDrawExtendedInfo(false);
 		NoRecoil(false);
@@ -111,11 +113,9 @@ namespace Features
 
 	void CFeatures::DrawEnemyInGameRadar()
 	{
-		this->m_mtxCollectData.lock();
-
+		EnterCriticalSection(&this->m_csCollectData);
 		MainRadarHackWork();
-
-		this->m_mtxCollectData.unlock();
+		LeaveCriticalSection(&this->m_csCollectData);
 	}
 
 	void CFeatures::ClientSoldierEntityListGrabber(DWORD_PTR ClientSoldierEntity)
@@ -125,9 +125,9 @@ namespace Features
 			ClientSoldierEntity) 
 			!= this->m_vClientSoldierEntityList.end())) 
 		{
-			this->m_mtxCollectData.lock();
+			EnterCriticalSection(&this->m_csCollectData);
 			this->m_vClientSoldierEntityList.push_back(ClientSoldierEntity);
-			this->m_mtxCollectData.unlock();
+			LeaveCriticalSection(&this->m_csCollectData);
 		}
 	}
 

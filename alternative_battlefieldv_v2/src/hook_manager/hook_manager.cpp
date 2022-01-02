@@ -72,17 +72,7 @@ namespace HookManager
 
 	CHookManager::~CHookManager()
 	{
-		//UnhookAll();
-	}
-
-	void* CHookManager::FindFunctionMainModule(const char* pszPattern, const char* pszMask)
-	{
-		auto Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(), pszPattern, pszMask);
-
-		if (Address)
-			this->m_vFunctionsAddressessList.push_back(Address);
-
-		return Address;
+		UnhookAll();
 	}
 
 	bool CHookManager::DisableHook(void* Address)
@@ -98,7 +88,8 @@ namespace HookManager
 
 	bool CHookManager::Hook_sub1420C7C90()
 	{
-		static void* Address = FindFunctionMainModule("\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x48\x8B\x00\x00\x48\x8B\x00\x48\x8B\x00\x48\x8B\x00\xFF\x90", 
+		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(), 
+			"\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x48\x8B\x00\x00\x48\x8B\x00\x48\x8B\x00\x48\x8B\x00\xFF\x90",
 			"xx???xxxx?xx??xx?xx?xx?xx");
 	
 		if (!Address)
@@ -115,8 +106,8 @@ namespace HookManager
 
 	bool CHookManager::Hook_sub140970280()
 	{
-		static void* Address = FindFunctionMainModule(
-			"\x40\x00\x57\x41\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x28\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x4C\x8B", 
+		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(), 
+			"\x40\x00\x57\x41\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x28\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x4C\x8B",
 			"x?xx?xxx?xxxxx????xx???xx???xx?xx");
 
 		if (MH_CreateHook(Address, sub140970280_hooked, (LPVOID*)&pfsub140970280) != MH_OK)
@@ -130,7 +121,8 @@ namespace HookManager
 
 	bool CHookManager::Hook_sub14958F0D0()
 	{
-		static void* Address = FindFunctionMainModule("\x44\x0F\x00\x00\x00\x00\x00\x00\x41\xF6\xC1\x00\x75", "xx??????xxx?x");
+		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(), 
+			"\x44\x0F\x00\x00\x00\x00\x00\x00\x41\xF6\xC1\x00\x75", "xx??????xxx?x");
 
 		if (MH_CreateHook(Address, sub14958F0D0_hooked, (LPVOID*)&pfsub14958F0D0) != MH_OK)
 			return false;
@@ -143,7 +135,7 @@ namespace HookManager
 
 	bool CHookManager::Hook_sub1405C10A0()
 	{
-		static void* Address = FindFunctionMainModule(
+		static void* Address = (void*)memory_utils::pattern_scanner_module(memory_utils::get_base(),
 			"\x40\x00\x48\x83\xEC\x00\x48\xC7\x44\x24\x20\x00\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x8B\x00\x00\x00\x00\x00\x48\x85\x00\x75", 
 			"x?xxx?xxxxx????xx???xx???xx???xx?????xx?x");
 
@@ -198,17 +190,7 @@ namespace HookManager
 
 	bool CHookManager::UnhookAll()
 	{
-		auto ret = true;
-
-		for (auto& addr : this->m_vFunctionsAddressessList)
-		{
-			if (!DisableHook(addr))
-			{
-				Console::Attach("Error");
-				Console::PrintLogTime(__FUNCTION__, "Failed unhook at: 0x%p\n", addr);
-				ret = false;
-			}
-		}
+		auto ret = DisableHook(MH_ALL_HOOKS);
 
 		MH_Uninitialize();
 

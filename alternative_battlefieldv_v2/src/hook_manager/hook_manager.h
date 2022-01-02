@@ -3,10 +3,6 @@ namespace HookManager
 	class CHookManager
 	{
 	private:
-		std::vector<void*> m_vFunctionsAddressessList;
-
-		void* FindFunctionMainModule(const char* pszPattern, const char* pszMask);
-
 		bool DisableHook(void* Address);
 		
 		bool Hook_sub1420C7C90();

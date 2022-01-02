@@ -34,12 +34,7 @@ void MainHackThread(void* arg)
 		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 	}
 
-	if (!HookManager::pHookManager->UnhookAll())
-	{
-		Console::Attach("Error");
-		Console::PrintLogTime(__FUNCTION__, "Unhook failed!\n");
-		return;
-	}
+	FrostbiteFunctions::Input::SetBlockInput(false);
 
 failed_jmp:
 	Console::PrintLogTime(__FUNCTION__, "Exit...\n");

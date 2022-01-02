@@ -5,7 +5,7 @@ namespace Features
 	private:
 		DWORD_PTR m_pLocalClientSoldierEntity;
 		std::vector<DWORD_PTR> m_vClientSoldierEntityList;
-		std::mutex m_mtxCollectData;
+		CRITICAL_SECTION m_csCollectData;
 		std::unique_ptr<FrostbiteGui::CFrostbiteGui> m_pFrostbiteGui;
 
 		void MainRadarHackWork();
