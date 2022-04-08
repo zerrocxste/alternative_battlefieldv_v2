@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="src\alternative.cpp" />
     <ClCompile Include="src\Color\color.cpp" />
+    <ClCompile Include="src\console\console.cpp" />
+    <ClCompile Include="src\error_interface\error_interface.cpp" />
     <ClCompile Include="src\features\features.cpp" />
     <ClCompile Include="src\frostbite_functions\frostbite_functions.cpp" />
     <ClCompile Include="src\frostbite_gui\frostbite_gui.cpp" />
@@ -34,6 +36,7 @@
     <ClInclude Include="src\alternative.h" />
     <ClInclude Include="src\Color\color.h" />
     <ClInclude Include="src\console\console.h" />
+    <ClInclude Include="src\error_interface\error_interface.h" />
     <ClInclude Include="src\features\features.h" />
     <ClInclude Include="src\frostbite_functions\frostbite_functions.h" />
     <ClInclude Include="src\frostbite_gui\frostbite_gui.h" />

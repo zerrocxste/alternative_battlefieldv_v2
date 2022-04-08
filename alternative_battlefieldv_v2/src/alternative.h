@@ -12,6 +12,8 @@
 #include <direct.h>
 #include <intrin.h>
 
+#include "error_interface/error_interface.h"
+
 #include "../libs/minhook/minhook.h"
 #pragma comment (lib, "libs/minhook/minhook.lib")
 

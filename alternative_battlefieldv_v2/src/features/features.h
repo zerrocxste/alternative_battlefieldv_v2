@@ -8,6 +8,15 @@ namespace Features
 		CRITICAL_SECTION m_csCollectData;
 		std::unique_ptr<FrostbiteGui::CFrostbiteGui> m_pFrostbiteGui;
 
+		std::uint64_t PatchAddressVisibleCheck;
+		std::uint64_t PatchAddressWriteVaribles;
+		std::uint64_t PatchAddressSmokeCheck;
+		std::uint64_t PatchAddressExtendedNametag;
+		std::uint64_t PatchAddressScopeReloading;
+		std::uint64_t PatchAddressWeaponPitch;
+		std::uint64_t PatchAddressWeaponYaw;
+		std::uint64_t PatchAddressFirerate;
+
 		void MainRadarHackWork();
 		void DrawMenu(__int64 pUnk);
 	public:

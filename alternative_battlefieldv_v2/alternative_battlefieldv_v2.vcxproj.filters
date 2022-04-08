@@ -37,6 +37,9 @@
     <Filter Include="src\frostbite_functions">
       <UniqueIdentifier>{c90f40d8-a3a7-40e1-8c0d-545df49e8b11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\error_interface">
+      <UniqueIdentifier>{85a3efc0-b5c2-48ee-813b-6989fe3df756}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\alternative.cpp">
@@ -65,6 +68,12 @@
     </ClCompile>
     <ClCompile Include="src\frostbite_functions\frostbite_functions.cpp">
       <Filter>src\frostbite_functions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\console\console.cpp">
+      <Filter>src\console</Filter>
+    </ClCompile>
+    <ClCompile Include="src\error_interface\error_interface.cpp">
+      <Filter>src\error_interface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +109,9 @@
     </ClInclude>
     <ClInclude Include="src\frostbite_functions\frostbite_functions.h">
       <Filter>src\frostbite_functions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\error_interface\error_interface.h">
+      <Filter>src\error_interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,34 +3,16 @@
 namespace FrostbiteFunctions
 {
 	using fSetBlockInput = bool(__fastcall*)(bool, int);
-	fSetBlockInput pfSetBlockInput = (fSetBlockInput)memory_utils::pattern_scanner_module(
-		memory_utils::get_base(),
-		"\x48\x8B\x00\x00\x00\x00\x00\x4C\x8B\x00\x00\x00\x00\x00\x4C\x39\x00\x74\x00\x4C\x8B\x00\x41\x39\x00\x74\x00\x48\x83\xC0\x00\x4C\x39\x00\x75\x00\xC3\x41\x88\x00\x00\xC3\x48\x8D",
-		"xx?????xx?????xx?x?xx?xx?x?xxx?xx?x?xxx??xxx");
-
 	using fDrawScreenText = void(__fastcall*)(__int64, int, int, __int64, int, float);
-	fDrawScreenText pfDrawScreenText = (fDrawScreenText)memory_utils::pattern_scanner_module(
-		memory_utils::get_base(),
-		"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x4C\x89\x00\x44\x89\x00\x89\xD5",
-		"xx???xx???xx???xxxx?xx?xx?xx");
-
 	using fDrawEngineLine = void(__fastcall*)(__int64, float*, float*, int);
-	fDrawEngineLine pfDrawEngineLine = (fDrawEngineLine)memory_utils::pattern_scanner_module(
-		memory_utils::get_base(),
-		"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x48\x89\x00\x4C\x89\x00\xBA\x00\x00\x00\x00\x44\x89",
-		"xx???xx???xxxx?xx?xx?x????xx");
-
 	using fDrawEngineFilledRect = void(__fastcall*)(__int64, float*, float*, int);
-	fDrawEngineFilledRect pfDrawEngineFilledRect = (fDrawEngineFilledRect)memory_utils::pattern_scanner_module(
-		memory_utils::get_base(),
-		"\x48\x89\x00\x48\x89\x00\x00\x48\x89\x00\x00\x48\x89\x00\x00\x57\x48\x83\xEC\x00\x0F\x29\x00\x00\x48\x89\x00\xF3\x0F",
-		"xx?xx??xx??xx??xxxx?xx??xx?xx");
-
 	using fGetGameScreenResolution = void(__fastcall*)(__int64, int*);
-	fGetGameScreenResolution pfGetGameScreenResolution = (fGetGameScreenResolution)memory_utils::pattern_scanner_module(
-		memory_utils::get_base(),
-		"\x8B\x05\x00\x00\x00\x00\x89\x02\x8B\x05",
-		"xx????xxxx");
+
+	fSetBlockInput pfSetBlockInput = nullptr;
+	fDrawScreenText pfDrawScreenText = nullptr;
+	fDrawEngineLine pfDrawEngineLine = nullptr;
+	fDrawEngineFilledRect pfDrawEngineFilledRect = nullptr;
+	fGetGameScreenResolution pfGetGameScreenResolution = nullptr;
 
 	bool Input::SetBlockInput(bool bIsBlock)
 	{
@@ -90,5 +72,50 @@ namespace FrostbiteFunctions
 		pfGetGameScreenResolution(0, iResolution);
 
 		return iResolution;
+	}
+
+	bool Initiating()
+	{
+		pfSetBlockInput = (fSetBlockInput)memory_utils::pattern_scanner_module(
+			memory_utils::get_base(),
+			"\x48\x8B\x00\x00\x00\x00\x00\x4C\x8B\x00\x00\x00\x00\x00\x4C\x39\x00\x74\x00\x4C\x8B\x00\x41\x39\x00\x74\x00\x48\x83\xC0\x00\x4C\x39\x00\x75\x00\xC3\x41\x88\x00\x00\xC3\x48\x8D",
+			"xx?????xx?????xx?x?xx?xx?x?xxx?xx?x?xxx??xxx");
+
+		if (!pfSetBlockInput)
+			return false;
+
+		pfDrawScreenText = (fDrawScreenText)memory_utils::pattern_scanner_module(
+			memory_utils::get_base(),
+			"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x4C\x89\x00\x44\x89\x00\x89\xD5",
+			"xx???xx???xx???xxxx?xx?xx?xx");
+
+		if (!pfDrawScreenText)
+			return false;
+
+		pfDrawEngineLine = (fDrawEngineLine)memory_utils::pattern_scanner_module(
+			memory_utils::get_base(),
+			"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x48\x89\x00\x4C\x89\x00\xBA\x00\x00\x00\x00\x44\x89",
+			"xx???xx???xxxx?xx?xx?x????xx");
+
+		if (!pfDrawEngineLine)
+			return false;
+
+		pfDrawEngineFilledRect = (fDrawEngineFilledRect)memory_utils::pattern_scanner_module(
+			memory_utils::get_base(),
+			"\x48\x89\x00\x48\x89\x00\x00\x48\x89\x00\x00\x48\x89\x00\x00\x57\x48\x83\xEC\x00\x0F\x29\x00\x00\x48\x89\x00\xF3\x0F",
+			"xx?xx??xx??xx??xxxx?xx??xx?xx");
+
+		if (!pfDrawEngineFilledRect)
+			return false;
+
+		pfGetGameScreenResolution = (fGetGameScreenResolution)memory_utils::pattern_scanner_module(
+			memory_utils::get_base(),
+			"\x8B\x05\x00\x00\x00\x00\x89\x02\x8B\x05",
+			"xx????xxxx");
+
+		if (!pfGetGameScreenResolution)
+			return false;
+
+		return true;
 	}
 }

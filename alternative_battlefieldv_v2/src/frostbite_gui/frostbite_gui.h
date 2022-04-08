@@ -8,10 +8,16 @@ namespace FrostbiteGui
 		CFrostbiteGui();
 		~CFrostbiteGui();
 
+		void EraseWindowData();
+
 		void NewWindow(const char* pszName, std::uint32_t x, std::uint32_t y, std::uint32_t* iCurrentlyTabHovered, float flFontSize, std::uint32_t iSizeX = 0, std::uint32_t iSizeY = 0);
 		void EndWindow(__int64 pUnk);
 		bool AddCheckbox(__int64 pUnk, const char* pszText, bool* pVarible);
 		void AddText(__int64 pUnk, const char* pszText);
+
+		float GetActualWidthLine();
+
+		void RecalcWindowWidth(float flCurrentWidthList);
 
 		void SameLine();
 	private:
