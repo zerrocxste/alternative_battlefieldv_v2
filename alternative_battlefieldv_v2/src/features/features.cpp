@@ -120,15 +120,15 @@ namespace Features
 
 	void CFeatures::ClientSoldierEntityListGrabber(DWORD_PTR ClientSoldierEntity)
 	{
+		EnterCriticalSection(&this->m_csCollectData);
 		if (!(std::find(this->m_vClientSoldierEntityList.begin(), 
 			this->m_vClientSoldierEntityList.end(), 
 			ClientSoldierEntity) 
 			!= this->m_vClientSoldierEntityList.end())) 
 		{
-			EnterCriticalSection(&this->m_csCollectData);
 			this->m_vClientSoldierEntityList.push_back(ClientSoldierEntity);
-			LeaveCriticalSection(&this->m_csCollectData);
 		}
+		LeaveCriticalSection(&this->m_csCollectData);
 	}
 
 	void CFeatures::LocalpClientSoldierEntityGrabber(DWORD_PTR pClientSoldierEntity)
